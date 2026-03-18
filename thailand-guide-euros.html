@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thailand Travel Guide &mdash; 10 Nights</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --th-red:      #A51931;
+    --th-blue:     #2D2A4A;
+    --th-gold:     #c8960a;
+    --th-gold-lt:  #f0c040;
+    --ink:         #0e0a18;
+    --ink-soft:    #16122a;
+    --paper:       #f8f7fc;
+    --paper-warm:  #efecf7;
+    --paper-dark:  #dbd6ee;
+    --muted:       #6a6282;
+    --light-muted: #a09ab8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--paper); color: var(--ink); font-family: "DM Sans", sans-serif; font-weight: 300; line-height: 1.7; overflow-x: hidden; }
+
+  /* ── HERO ─────────────────────────────── */
+  .flag-bar { display: flex; height: 6px; }
+  .fb { flex: 1; } .fb.red { background: var(--th-red); } .fb.white { background: rgba(255,255,255,.6); } .fb.blue { background: var(--th-blue); flex: 2; }
+
+  .hero { background: var(--th-blue); color: var(--paper); min-height: 65vh; display: grid; grid-template-rows: auto 1fr auto; position: relative; overflow: hidden; }
+  /* Photo background layer */
+  .hero::after { content: ""; position: absolute; inset: 0; z-index: 0;
+    background:
+      url("https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=1600&q=85") center 78% / cover no-repeat;
+    opacity: .45; }
+  /* Dark gradient overlay for text legibility */
+  .hero::before { content: ""; position: absolute; inset: 0; z-index: 1;
+    background:
+      linear-gradient(105deg, rgba(14,10,24,.92) 0%, rgba(14,10,24,.70) 45%, rgba(45,42,74,.55) 100%),
+      radial-gradient(ellipse 50% 70% at 75% 50%, rgba(165,25,49,.30) 0%, transparent 65%); }
+  .hero-decor { position: absolute; right: -40px; top: 50%; transform: translateY(-50%); font-size: 28vw; font-weight: 900; color: rgba(165,25,49,.08); line-height: 1; user-select: none; pointer-events: none; z-index: 1; }
+  .hero-nav { padding: 2.5rem 4rem; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 3; }
+  .hero-nav .logo { font-size: 1.1rem; color: var(--th-gold-lt); letter-spacing: .2em; font-weight: 500; }
+  .hero-nav .tag  { font-size: .75rem; letter-spacing: .2em; text-transform: uppercase; color: var(--light-muted); border: 1px solid rgba(255,255,255,.15); padding: .4rem 1rem; }
+  .hero-body { display: flex; flex-direction: column; justify-content: center; padding: 0 4rem; position: relative; z-index: 3; }
+  .hero-eyebrow { font-size: .78rem; letter-spacing: .35em; text-transform: uppercase; color: var(--th-red); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem; }
+  .hero-eyebrow::before { content: ""; display: block; width: 40px; height: 1px; background: var(--th-red); }
+  .hero-title { font-family: "Playfair Display", serif; font-size: clamp(4rem, 9vw, 9rem); font-weight: 900; line-height: .9; letter-spacing: -.02em; margin-bottom: 2.5rem; color: white; }
+  .hero-title em { font-style: italic; color: var(--th-gold-lt); }
+  .hero-subtitle { max-width: 520px; font-size: 1.05rem; color: rgba(255,255,255,.55); margin-bottom: 3rem; }
+  .hero-stats { display: flex; gap: 3rem; }
+  .hero-stat { display: flex; flex-direction: column; gap: .25rem; }
+  .hero-stat-num { font-family: "Playfair Display", serif; font-size: 2.5rem; font-weight: 700; color: var(--th-gold-lt); line-height: 1; }
+  .hero-stat-label { font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; color: var(--light-muted); }
+  .hero-footer { padding: 2rem 4rem; border-top: 1px solid rgba(255,255,255,.07); display: flex; gap: 2rem; flex-wrap: wrap; position: relative; z-index: 3; }
+  .hero-city { font-size: .85rem; letter-spacing: .15em; color: rgba(255,255,255,.4); display: flex; align-items: center; gap: .5rem; }
+  .hero-city::before { content: "C6"; color: var(--th-red); font-size: .55rem; }
+
+  /* ── LAYOUT ───────────────────────────── */
+  .section { padding: 5rem 4rem; }
+  .section-alt  { background: var(--paper-warm); }
+  .section-dark { background: var(--ink-soft); color: var(--paper); }
+  .section-header { display: flex; align-items: baseline; gap: 1.5rem; margin-bottom: 3.5rem; }
+  .section-num { font-family: "Playfair Display", serif; font-size: 4rem; font-weight: 900; color: rgba(0,0,0,.06); line-height: 1; }
+  .section-dark .section-num { color: rgba(255,255,255,.06); }
+  .section-title { font-family: "Playfair Display", serif; font-size: 2.4rem; font-weight: 700; line-height: 1.1; }
+  .section-title span { color: var(--th-red); font-style: italic; }
+  .section-dark .section-title span { color: var(--th-gold-lt); }
+
+  /* Flag divider stripe */
+  .flag-div { display: flex; height: 3px; margin: 1rem 0 4rem; }
+  .fd-r { background: var(--th-red); flex: 1; } .fd-w { background: var(--paper-dark); flex: 1; } .fd-b { background: var(--th-blue); flex: 2; }
+
+  /* ── ROUTE STRIP ──────────────────────── */
+  .route-strip { background: var(--paper-dark); padding: 2rem 4rem; display: flex; align-items: center; overflow-x: auto; }
+  .r-city { display: flex; flex-direction: column; align-items: center; text-align: center; flex-shrink: 0; }
+  .r-dot { width: 14px; height: 14px; border-radius: 50%; margin-bottom: .5rem; position: relative; }
+  .r-dot.red { background: var(--th-red); }
+  .r-dot.red::after { content: ""; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 22px; height: 22px; border: 1px solid var(--th-red); border-radius: 50%; opacity: .4; }
+  .r-dot.blue { background: var(--th-blue); }
+  .r-dot.blue::after { content: ""; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 22px; height: 22px; border: 1px solid var(--th-blue); border-radius: 50%; opacity: .4; }
+  .r-name { font-family: "Playfair Display", serif; font-size: .85rem; font-weight: 700; }
+  .r-days { font-size: .65rem; color: var(--muted); letter-spacing: .1em; }
+  .r-line { flex: 1; min-width: 55px; height: 2px; background: repeating-linear-gradient(90deg, var(--light-muted) 0, var(--light-muted) 5px, transparent 5px, transparent 12px); margin-bottom: 1.5rem; position: relative; }
+  .r-label { position: absolute; top: -1.4rem; left: 50%; transform: translateX(-50%); font-size: .6rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+
+  /* ── DAY CARDS ────────────────────────── */
+  .itinerary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); border: 1px solid var(--paper-dark); }
+  .day-card { border: 1px solid var(--paper-dark); padding: 2rem; position: relative; background: var(--paper); transition: background .3s; }
+  .day-card:hover { background: white; }
+  .day-num { font-family: "Playfair Display", serif; font-size: 3.5rem; font-weight: 900; color: var(--paper-dark); line-height: 1; position: absolute; top: 1.5rem; right: 1.8rem; }
+  .d-tag { display: inline-block; font-size: .68rem; letter-spacing: .25em; text-transform: uppercase; color: white; padding: .25rem .7rem; margin-bottom: .75rem; }
+  .d-tag.bkk    { background: var(--th-red); }
+  .d-tag.cnx    { background: var(--th-blue); }
+  .d-tag.south  { background: #5a2a6a; }
+  .d-tag.travel { background: var(--th-gold); color: var(--ink); }
+  .day-title { font-family: "Playfair Display", serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; padding-right: 3rem; line-height: 1.3; }
+  .day-acts { list-style: none; }
+  .day-acts li { display: flex; gap: .75rem; font-size: .85rem; color: var(--muted); padding: .35rem 0; border-bottom: 1px dashed var(--paper-dark); }
+  .day-acts li:last-child { border-bottom: none; }
+  .day-acts.red  li::before { content: "92"; color: var(--th-red); flex-shrink: 0; }
+  .day-acts.blue li::before { content: "92"; color: var(--th-blue); flex-shrink: 0; }
+  .day-acts.south li::before { content: "92"; color: #7a4a8a; flex-shrink: 0; }
+  .day-food { margin-top: 1rem; background: var(--paper-warm); padding: .6rem .8rem; font-size: .78rem; color: var(--muted); border-left: 3px solid var(--th-gold); }
+  .day-food strong { color: var(--ink); }
+  /* Travel card */
+  .day-card.travel { background: var(--ink); color: var(--paper); }
+  .day-card.travel .day-num { color: rgba(255,255,255,.08); }
+  .day-card.travel .day-title { color: var(--paper); }
+  .day-card.travel .day-acts li { color: rgba(255,255,255,.6); border-color: rgba(255,255,255,.1); }
+  .day-card.travel .day-acts li::before { content: "92"; color: var(--th-gold-lt); flex-shrink: 0; }
+  .day-card.travel .day-food { background: rgba(255,255,255,.06); color: rgba(255,255,255,.5); border-color: var(--th-gold); }
+  .day-card.travel .day-food strong { color: var(--th-gold-lt); }
+  /* Chiang Mai variant */
+  .day-card.cnx-card { background: #f0f2fa; }
+  .day-card.cnx-card:hover { background: #e8ecf8; }
+  .day-card.cnx-card .day-num { color: #c0c8e8; }
+  .day-card.cnx-card .day-acts li::before { content: "92"; color: var(--th-blue); flex-shrink: 0; }
+  .day-card.cnx-card .day-food { border-color: var(--th-blue); }
+  /* South variant */
+  .day-card.south-card { background: #f7f2fc; }
+  .day-card.south-card:hover { background: #f0eafa; }
+  .day-card.south-card .day-num { color: #d8c8e8; }
+  .day-card.south-card .day-acts li::before { content: "92"; color: #7a4a8a; flex-shrink: 0; }
+  .day-card.south-card .day-food { border-color: #7a4a8a; }
+
+  /* ── CITY HIGHLIGHTS ──────────────────── */
+  .cities-grid { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid rgba(255,255,255,.1); }
+  .city-col { padding: 2rem 1.5rem; border-right: 1px solid rgba(255,255,255,.1); }
+  .city-col:last-child { border-right: none; }
+  .city-name { font-family: "Playfair Display", serif; font-size: 1.2rem; font-weight: 700; margin-bottom: .2rem; }
+  .city-col.bkk-col .city-name { color: #ff8888; }
+  .city-col.cnx-col .city-name { color: #a0b0ff; }
+  .city-col.south-col .city-name { color: #c0a0e0; }
+  .city-days { font-size: .68rem; letter-spacing: .15em; text-transform: uppercase; color: rgba(255,255,255,.3); margin-bottom: 1.2rem; }
+  .city-hi { list-style: none; }
+  .city-hi li { font-size: .8rem; color: rgba(255,255,255,.5); padding: .25rem 0; border-bottom: 1px solid rgba(255,255,255,.05); display: flex; gap: .5rem; }
+  .city-col.bkk-col   .city-hi li::before { content: "2"; color: var(--th-red); flex-shrink: 0; }
+  .city-col.cnx-col   .city-hi li::before { content: "2"; color: #a0b0ff; flex-shrink: 0; }
+  .city-col.south-col .city-hi li::before { content: "2"; color: #c0a0e0; flex-shrink: 0; }
+
+  /* ── FOOD ─────────────────────────────── */
+  .food-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  .food-col-name { font-family: "Playfair Display", serif; font-size: 1.1rem; font-weight: 700; padding-bottom: .5rem; margin-bottom: 1rem; border-bottom: 2px solid; }
+  .food-col-name.red  { color: var(--th-red); border-color: var(--th-red); }
+  .food-col-name.blue { color: var(--th-blue); border-color: var(--th-blue); }
+  .food-col-name.sth  { color: #7a4a8a; border-color: #7a4a8a; }
+  .food-item { margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px dashed var(--paper-dark); }
+  .food-item:last-child { border-bottom: none; }
+  .food-name { font-weight: 500; font-size: .95rem; margin-bottom: .2rem; }
+  .food-desc { font-size: .8rem; color: var(--muted); line-height: 1.5; }
+  .food-where { font-size: .72rem; color: var(--th-gold); margin-top: .3rem; font-weight: 500; }
+
+  /* ── WHEN TO VISIT ────────────────────── */
+  .season-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2.5rem; }
+  .season-card { border: 1px solid var(--paper-dark); padding: 1.8rem 1.5rem; background: var(--paper); }
+  .season-card.best { border-top: 3px solid var(--th-red); }
+  .season-card.good { border-top: 3px solid var(--th-blue); }
+  .season-card.ok   { border-top: 3px solid #aaa; }
+  .s-badge { display: inline-block; font-size: .65rem; letter-spacing: .2em; text-transform: uppercase; padding: .22rem .65rem; margin-bottom: .75rem; }
+  .s-badge.best { background: var(--th-red); color: white; }
+  .s-badge.good { background: var(--th-blue); color: white; }
+  .s-badge.ok   { background: #ccc; color: #555; }
+  .s-name   { font-family: "Playfair Display", serif; font-size: 1.15rem; font-weight: 700; margin-bottom: .25rem; }
+  .s-months { font-size: .72rem; letter-spacing: .15em; text-transform: uppercase; color: var(--muted); margin-bottom: .75rem; }
+  .s-desc   { font-size: .82rem; color: var(--muted); line-height: 1.55; }
+  .s-list   { list-style: none; margin-top: .75rem; }
+  .s-list li { font-size: .78rem; color: var(--muted); padding: .2rem 0; display: flex; gap: .5rem; }
+  .s-list li::before { content: "C6"; color: var(--th-red); font-size: .5rem; flex-shrink: 0; margin-top: .35rem; }
+
+  /* ── TRANSPORT ────────────────────────── */
+  .transport-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
+  .t-section-title { font-family: "Playfair Display", serif; font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--th-gold-lt); display: flex; align-items: center; gap: .75rem; }
+  .t-section-title::after { content: ""; flex: 1; height: 1px; background: rgba(255,255,255,.1); }
+  .t-item { display: flex; gap: 1.25rem; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,.07); }
+  .t-item:last-child { border-bottom: none; }
+  .t-icon { width: 42px; height: 42px; background: rgba(165,25,49,.18); border: 1px solid rgba(165,25,49,.38); border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+  .t-name { font-weight: 500; font-size: .95rem; margin-bottom: .25rem; }
+  .t-desc { font-size: .82rem; color: rgba(255,255,255,.45); line-height: 1.5; }
+  .t-cost { font-size: .78rem; color: var(--th-gold-lt); margin-top: .3rem; font-weight: 500; }
+
+  /* ── SHOPPING ─────────────────────────── */
+  .shop-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: rgba(255,255,255,.07); }
+  .shop-item { background: rgba(255,255,255,.03); padding: 1.6rem; }
+  .shop-emoji { font-size: 1.8rem; margin-bottom: .6rem; display: block; }
+  .shop-name { font-family: "Playfair Display", serif; font-weight: 700; font-size: .95rem; color: white; margin-bottom: .3rem; }
+  .shop-sub  { font-size: .68rem; color: rgba(255,255,255,.3); letter-spacing: .1em; margin-bottom: .7rem; }
+  .shop-desc { font-size: .8rem; color: rgba(255,255,255,.5); line-height: 1.6; margin-bottom: .6rem; }
+  .shop-tip  { font-size: .75rem; color: rgba(255,255,255,.3); }
+
+  /* ── BUDGET ───────────────────────────── */
+  .budget-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
+  .b-item { margin-bottom: 1.5rem; }
+  .b-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: .5rem; }
+  .b-label  { font-size: .85rem; font-weight: 500; }
+  .b-amount { font-family: "Playfair Display", serif; font-size: 1.1rem; font-weight: 700; color: var(--th-red); }
+  .b-track  { height: 6px; background: var(--paper-dark); border-radius: 3px; overflow: hidden; }
+  .b-fill   { height: 100%; background: linear-gradient(90deg, var(--th-red), var(--th-gold)); border-radius: 3px; }
+  .b-summary { background: var(--ink); color: var(--paper); padding: 2.5rem; }
+  .b-sum-label { font-size: .75rem; letter-spacing: .25em; text-transform: uppercase; color: rgba(255,255,255,.35); margin-bottom: .5rem; }
+  .b-sum-num   { font-family: "Playfair Display", serif; font-size: 3.5rem; font-weight: 900; color: var(--th-gold-lt); line-height: 1; margin-bottom: .25rem; }
+  .b-sum-sub   { font-size: .8rem; color: rgba(255,255,255,.35); margin-bottom: 2rem; }
+  .b-breakdown { list-style: none; }
+  .b-breakdown li { display: flex; justify-content: space-between; font-size: .85rem; padding: .6rem 0; border-bottom: 1px solid rgba(255,255,255,.07); }
+  .b-breakdown li:last-child { border: none; }
+  .b-breakdown li span:last-child { color: var(--th-gold-lt); font-weight: 500; }
+
+  /* ── TIPS ─────────────────────────────── */
+  .tips-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+  .tip-card { background: var(--paper); border: 1px solid var(--paper-dark); padding: 2rem; position: relative; overflow: hidden; }
+  .tip-card::before { content: ""; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--th-red); }
+  .tip-card:nth-child(even)::before { background: var(--th-blue); }
+  .tip-icon  { font-size: 1.8rem; margin-bottom: .75rem; display: block; }
+  .tip-title { font-family: "Playfair Display", serif; font-size: 1rem; font-weight: 700; margin-bottom: .6rem; }
+  .tip-body  { font-size: .83rem; color: var(--muted); line-height: 1.6; }
+
+  /* ── FOOTER ───────────────────────────── */
+  .footer { background: var(--ink); color: rgba(255,255,255,.3); text-align: center; padding: 3rem 4rem; font-size: .78rem; letter-spacing: .15em; text-transform: uppercase; }
+  .footer strong { color: var(--th-gold-lt); }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  .hero-eyebrow { animation: fadeUp .8s .2s both; }
+  .hero-title    { animation: fadeUp .8s .4s both; }
+  .hero-subtitle { animation: fadeUp .8s .6s both; }
+  .hero-stats    { animation: fadeUp .8s .8s both; }
+
+  /* City photo */
+  .city-photo { width: 100%; height: 130px; object-fit: cover; display: block; margin-bottom: 1.2rem; filter: brightness(.85) saturate(1.1); transition: filter .3s; }
+  .city-col:hover .city-photo { filter: brightness(1) saturate(1.2); }
+
+  @media (max-width: 1100px) { .cities-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 900px) {
+    .section, .hero-nav, .hero-body, .hero-footer, .route-strip { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .hero-title { font-size: 3.5rem; }
+    .transport-grid, .budget-layout, .tips-grid, .season-grid, .food-grid, .cities-grid { grid-template-columns: 1fr; }
+    .shop-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Flag stripe at top -->
+<div class="flag-bar"><div class="fb red"></div><div class="fb white"></div><div class="fb blue"></div><div class="fb white"></div><div class="fb red"></div></div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-decor">&#x25C6;</div>
+  <nav class="hero-nav">
+    <span class="logo">&#x25C6; Travel Guide</span>
+    <span class="tag">10 Nights &middot; 3 Regions &middot; Mid-Range</span>
+  </nav>
+  <div class="hero-body">
+    <p class="hero-eyebrow">Complete 10-Night Itinerary</p>
+    <h1 class="hero-title">Thai<em>land</em></h1>
+    <p class="hero-subtitle">From Bangkok&#8217;s gilded temples and chaotic night markets through Chiang Mai&#8217;s elephant sanctuaries and mountain mist, down to Krabi&#8217;s limestone cliffs and Phi Phi&#8217;s incandescent islands.</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><span class="hero-stat-num">10</span><span class="hero-stat-label">Nights</span></div>
+      <div class="hero-stat"><span class="hero-stat-num">4</span><span class="hero-stat-label">Destinations</span></div>
+      <div class="hero-stat"><span class="hero-stat-num">~$1,100</span><span class="hero-stat-label">Est. Total</span></div>
+      <div class="hero-stat"><span class="hero-stat-num">~$110</span><span class="hero-stat-label">Per Day</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ROUTE STRIP -->
+<div class="route-strip">
+  <div class="r-city"><div class="r-dot red"></div><div class="r-name">Bangkok</div><div class="r-days">Days 1&ndash;3 &middot; BKK/DMK</div></div>
+  <div class="r-line"><span class="r-label">Domestic flight ~1h 20m</span></div>
+  <div class="r-city"><div class="r-dot blue"></div><div class="r-name">Chiang Mai</div><div class="r-days">Days 4&ndash;6</div></div>
+  <div class="r-line"><span class="r-label">Domestic flight ~1h 30m</span></div>
+  <div class="r-city"><div class="r-dot red"></div><div class="r-name">Krabi / Ao Nang</div><div class="r-days">Days 7&ndash;8</div></div>
+  <div class="r-line"><span class="r-label">Ferry ~2h</span></div>
+  <div class="r-city"><div class="r-dot blue"></div><div class="r-name">Koh Phi Phi</div><div class="r-days">Days 9&ndash;10 &middot; Fly Phuket</div></div>
+</div>
+
+<!-- ITINERARY -->
+<section class="section section-alt">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2 class="section-title">Day-by-Day <span>Itinerary</span></h2>
+  </div>
+  <div class="itinerary-grid">
+
+    <div class="day-card travel">
+      <span class="day-num">01</span>
+      <span class="d-tag travel">Arrival</span>
+      <h3 class="day-title">Arrive Bangkok &mdash; Suvarnabhumi Airport</h3>
+      <ul class="day-acts">
+        <li>Airport Rail Link to Phaya Thai, then BTS Skytrain to hotel (~45 min, THB 45)</li>
+        <li>Buy AIS or DTAC tourist SIM at arrival hall (~THB 299 for 15 GB, 30 days)</li>
+        <li>Evening: Wat Arun lit at night &mdash; best photographed from the opposite riverbank</li>
+        <li>Khao San Road for people-watching &mdash; chaotic, fun for one evening</li>
+        <li>Or: taxi to Yaowarat (Chinatown) for grilled seafood on Phadungdao Street</li>
+      </ul>
+      <div class="day-food"><strong>Eat:</strong> Pad Thai Thip Samai (est. 1966, original Pad Thai &mdash; queue is worth it) or Raan Jay Fai for Michelin-starred street food (book ahead, THB 1,000+).</div>
+    </div>
+
+    <div class="day-card">
+      <span class="day-num">02</span>
+      <span class="d-tag bkk">Bangkok</span>
+      <h3 class="day-title">Grand Palace, Wat Pho &amp; Chao Phraya</h3>
+      <ul class="day-acts red">
+        <li>Grand Palace complex &mdash; Emerald Buddha, Wat Pra Kaew (arrive at 8 AM opening)</li>
+        <li>Wat Pho: reclining Buddha, oldest temple in Bangkok, free to wander</li>
+        <li>Chao Phraya river ferry to Wat Arun (Temple of Dawn) &mdash; THB 5 crossing</li>
+        <li>Pak Khlong Talat flower market &mdash; thousands of marigolds, best at dusk</li>
+        <li>Chatuchak Weekend Market (Sat/Sun only &mdash; world&#8217;s largest outdoor market)</li>
+      </ul>
+      <div class="day-food"><strong>Eat:</strong> Or Tor Kor Market near Chatuchak &mdash; the upscale government fresh market with excellent prepared food stalls. Som Tam Nua for the best green papaya salad in the city.</div>
+    </div>
+
+    <div class="day-card">
+      <span class="day-num">03</span>
+      <span class="d-tag bkk">Bangkok</span>
+      <h3 class="day-title">Temples, Art &amp; Modern Bangkok</h3>
+      <ul class="day-acts red">
+        <li>Wat Saket (Golden Mount) &mdash; 318 steps, city panorama, quieter than the Grand Palace</li>
+        <li>Jim Thompson House &mdash; beautiful Thai silk museum in a canal-side garden</li>
+        <li>Thonglor / Ekkamai neighbourhood &mdash; Bangkok&#8217;s best dining and bar district</li>
+        <li>Vertigo Rooftop Bar (Banyan Tree Hotel) for sunset over the skyline</li>
+        <li>Fly to Chiang Mai in the evening (DMK &rarr; CNX, ~1h 20m)</li>
+      </ul>
+      <div class="day-food"><strong>Eat:</strong> Dinner in Yaowarat (Chinatown) &mdash; crab fried rice and roast duck at T&T Pochana. Or blow out at Nahm or Le Du (both world-ranked Thai fine dining, book ahead).</div>
+    </div>
+
+    <div class="day-card travel">
+      <span class="day-num">04</span>
+      <span class="d-tag travel">Travel + CNX</span>
+      <h3 class="day-title">Arrive Chiang Mai &mdash; Old City Temples</h3>
+      <ul class="day-acts">
+        <li>Arrive Chiang Mai Airport &mdash; Grab to hotel in or near the Old City moat</li>
+        <li>Wat Phra Singh &mdash; the most revered temple in Chiang Mai, serene courtyard</li>
+        <li>Wat Chedi Luang &mdash; partially ruined 14th-century chedi, free evening access</li>
+        <li>Three Kings Monument &amp; historic city wall walk</li>
+        <li>Saturday Walking Street (Wualai Rd) or Sunday Walking Street (Tha Phae Gate) if timing aligns</li>
+      </ul>
+      <div class="day-food"><strong>Eat:</strong> Khao Soi at Huen Phen or Khao Soi Lung Prakit Kad Kom &mdash; the northern curry noodle that makes Chiang Mai worth visiting for food alone. Order it for your very first meal.</div>
+    </div>
+
+    <div class="day-card cnx-card">
+      <span class="day-num">05</span>
+      <span class="d-tag cnx">Chiang Mai</span>
+      <h3 class="day-title">Elephant Nature Park &mdash; Full Day</h3>
+      <ul class="day-acts blue">
+        <li>Full-day visit to Elephant Nature Park &mdash; ethical rescue sanctuary (book weeks ahead)</li>
+        <li>Feed, walk alongside, and learn the history of each rescued elephant</li>
+        <li>Mae Wang Valley scenery on the drive back to Chiang Mai</li>
+        <li>Evening: Nimman Road neighbourhood &mdash; independent cafes, boutiques, bars</li>
+        <li>Night Bazaar if energy allows &mdash; a more tourist-oriented but atmospheric market</li>
+      </ul>
+      <div class="day-food"><strong>Eat:</strong> Breakfast and lunch included at ENP. Evening: SP Chicken on Nimman for famous rotisserie chicken &mdash; order a half bird with sticky rice and papaya salad. Queue expected.</div>
+    </div>
+
+    <div class="day-card cnx-card">
+      <span class="day-num">06</span>
+      <span class="d-tag cnx">Chiang Mai</span>
+      <h3 class="day-title">Doi Suthep, Mountain Villages &amp; Fly South</h3>
+      <ul class="day-acts blue">
+        <li>Wat Phra That Doi Suthep &mdash; golden chedi on the mountainside, city views at sunrise</li>
+        <li>Doi Inthanon National Park &mdash; Thailand&#8217;s highest peak, twin royal chedis in forest</li>
+        <li>Hmong hill tribe village visit near the Doi Inthanon summit</li>
+        <li>Return to Chiang Mai, evening flight to Krabi (CNX &rarr; KBV, ~1h 40m)</li>
+        <li>Check in Ao Nang &mdash; the best base for Krabi exploration</li>
+      </ul>
+      <div class="day-food"><strong>Eat:</strong> Early market breakfast near the Old City before Doi Suthep. Arrive Krabi for dinner at Carnivore Steak &amp; Grill on Ao Nang beachfront &mdash; good Thai-Western seafood.</div>
+    </div>
+
+    <div class="day-card south-card">
+      <span class="day-num">07</span>
+      <span class="d-tag south">Krabi</span>
+      <h3 class="day-title">Railay Beach, Sea Caves &amp; Rock Climbing</h3>
+      <ul class="day-acts south">
+        <li>Long-tail boat from Ao Nang to Railay Beach (~15 min &mdash; only accessible by sea)</li>
+        <li>Phra Nang Cave Beach &mdash; sacred princess cave with towering limestone backdrop</li>
+        <li>Rock climbing on the karst cliffs (many operators in Railay East &mdash; all levels)</li>
+        <li>4 Islands snorkelling tour by longtail (book in Ao Nang, full day)</li>
+        <li>Sunset on Railay West beach with a cold Singha</li>
+      </ul>
+      <div class="day-food"><strong>Eat:</strong> Seafood BBQ at any Railay beach shack &mdash; order grilled tiger prawns by weight. Return to Ao Nang for dinner. Night market along Ao Nang beach road on weekends.</div>
+    </div>
+
+    <div class="day-card south-card">
+      <span class="day-num">08</span>
+      <span class="d-tag south">Krabi</span>
+      <h3 class="day-title">Tiger Cave Temple, Sea Kayaking &amp; Ferry to Phi Phi</h3>
+      <ul class="day-acts south">
+        <li>Tiger Cave Temple (Wat Tham Suea) &mdash; 1,237 steps to a golden Buddha panorama</li>
+        <li>Hong Island sea kayaking &mdash; paddle through caves into a hidden circular lagoon</li>
+        <li>Bor Thor mangrove kayaking (half-day, book separately or combined)</li>
+        <li>Afternoon ferry from Krabi Town pier to Koh Phi Phi Don (~2h &mdash; book ahead)</li>
+        <li>Check in Phi Phi &mdash; Tonsai Bay or Loh Dalum Bay for beach access</li>
+      </ul>
+      <div class="day-food"><strong>Eat:</strong> Krabi Town walking street lunch (Fri/Sat/Sun evening market near the waterfront). On Phi Phi: Papaya Restaurant on Tonsai Bay for Thai street food right off the boat.</div>
+    </div>
+
+    <div class="day-card south-card">
+      <span class="day-num">09</span>
+      <span class="d-tag south">Koh Phi Phi</span>
+      <h3 class="day-title">Maya Bay at Dawn &amp; Island Life</h3>
+      <ul class="day-acts south">
+        <li>Long-tail boat to Maya Bay before 7 AM &mdash; golden light, far fewer crowds than midday</li>
+        <li>Snorkel at Bamboo Island and Shark Point &mdash; excellent reef fish, occasional reef sharks</li>
+        <li>Phi Phi Viewpoint hike &mdash; 30-min steep climb, 270-degree island panorama at the top</li>
+        <li>Loh Dalum Bay afternoon: kayaks, hammocks, and cold coconuts</li>
+        <li>Fire show on Tonsai Bay beach after dinner &mdash; nightly, free to watch</li>
+      </ul>
+      <div class="day-food"><strong>Eat:</strong> Papaya Thai for pad kra pao (best on the island). Grilled whole fish from any Loh Dalum Bay beach vendor at night. Mango sticky rice at the market stall near the main pier.</div>
+    </div>
+
+    <div class="day-card south-card">
+      <span class="day-num">10</span>
+      <span class="d-tag south">Phi Phi / Depart</span>
+      <h3 class="day-title">Last Sunrise &amp; Ferry to Phuket Airport</h3>
+      <ul class="day-acts south">
+        <li>Sunrise kayak or paddleboard around the bay &mdash; the island is magical before 7 AM</li>
+        <li>Last bowl of Tom Kha Gai at any Tonsai restaurant before the ferry</li>
+        <li>Ferry Phi Phi &rarr; Phuket Rassada Pier (~2h &mdash; book the day before)</li>
+        <li>Grab or taxi from Rassada Pier to Phuket International Airport (HKT, ~30 min)</li>
+        <li>Fly home from Phuket</li>
+      </ul>
+      <div class="day-food"><strong>Eat:</strong> Airport note: Phuket HKT has decent Thai food in the international terminal &mdash; better than most regional airports. One last tom kha on the island is worth getting up early for.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CITY HIGHLIGHTS -->
+<section class="section section-dark">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2 class="section-title">Destination <span>Highlights</span></h2>
+  </div>
+  <div class="cities-grid">
+    <div class="city-col bkk-col">
+      <img class="city-photo" src="https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=600&q=80" alt="Bangkok" style="object-position: center 82%;" />
+      <div class="city-name">Bangkok</div>
+      <div class="city-days">3 Nights &middot; Days 1&ndash;3</div>
+      <ul class="city-hi">
+        <li>Grand Palace + Wat Pra Kaew</li>
+        <li>Wat Pho (reclining Buddha)</li>
+        <li>Wat Arun at golden hour</li>
+        <li>Chatuchak Weekend Market</li>
+        <li>Chao Phraya river ferry life</li>
+        <li>Vertigo Rooftop sunset</li>
+        <li>Yaowarat (Chinatown) night</li>
+      </ul>
+    </div>
+    <div class="city-col cnx-col">
+      <img class="city-photo" src="https://images.unsplash.com/photo-1506461883276-594a12b11cf3?w=600&q=80" alt="Doi Suthep Chiang Mai" />
+      <div class="city-name">Chiang Mai</div>
+      <div class="city-days">3 Nights &middot; Days 4&ndash;6</div>
+      <ul class="city-hi">
+        <li>Elephant Nature Park full day</li>
+        <li>Wat Phra Singh + Chedi Luang</li>
+        <li>Doi Suthep golden chedi</li>
+        <li>Doi Inthanon National Park</li>
+        <li>Khao Soi noodle pilgrimage</li>
+        <li>Nimman Road food scene</li>
+        <li>Walking Street markets</li>
+      </ul>
+    </div>
+    <div class="city-col south-col">
+      <img class="city-photo" src="https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=600&q=80" alt="Railay Beach Krabi" style="object-position: center 70%;" />
+      <div class="city-name">Krabi / Ao Nang</div>
+      <div class="city-days">2 Nights &middot; Days 7&ndash;8</div>
+      <ul class="city-hi">
+        <li>Railay Beach (boat access only)</li>
+        <li>Phra Nang Cave Beach</li>
+        <li>Limestone rock climbing</li>
+        <li>Tiger Cave Temple (1,237 steps)</li>
+        <li>Hong Island sea kayaking</li>
+        <li>4 Islands snorkelling tour</li>
+        <li>Bor Thor mangrove caves</li>
+      </ul>
+    </div>
+    <div class="city-col south-col">
+      <img class="city-photo" src="https://images.unsplash.com/photo-1537956965359-7573183d1f57?w=600&q=80" alt="Koh Phi Phi viewpoint" style="object-position: center 40%;" />
+      <div class="city-name">Koh Phi Phi</div>
+      <div class="city-days">2 Nights &middot; Days 9&ndash;10</div>
+      <ul class="city-hi">
+        <li>Maya Bay at dawn (longtail)</li>
+        <li>Bamboo Island snorkelling</li>
+        <li>Phi Phi Viewpoint hike</li>
+        <li>Shark Point reef dive</li>
+        <li>Loh Dalum Bay sunset</li>
+        <li>Tonsai fire show at night</li>
+        <li>Dawn kayak around the bay</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- FOOD -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2 class="section-title">Essential <span>Dishes</span></h2>
+  </div>
+  <div class="food-grid">
+    <div>
+      <div class="food-col-name red">Bangkok</div>
+      <div class="food-item">
+        <div class="food-name">Pad Thai</div>
+        <div class="food-desc">Done right: thin rice noodles wok-fried with egg, dried shrimp, bean sprouts, and fresh prawns, finished with lime, sugar, and crushed peanuts. The version at Thip Samai wraps it in a paper-thin egg crepe &mdash; a 1966 original.</div>
+        <div class="food-where">&rarr; Pad Thai Thip Samai (Mahachai Rd) &middot; Jay Fai (Michelin)</div>
+      </div>
+      <div class="food-item">
+        <div class="food-name">Tom Yum Goong</div>
+        <div class="food-desc">Hot and sour prawn soup: lemongrass, galangal, kaffir lime leaf, chilli, and plump river prawns in a clear broth. The clear version (nam sai) is more refined than the creamy red. Eat it everywhere &mdash; it varies enormously by cook.</div>
+        <div class="food-where">&rarr; Baan Klang Nam (riverside) &middot; any local restaurant</div>
+      </div>
+      <div class="food-item">
+        <div class="food-name">Som Tam</div>
+        <div class="food-desc">Green papaya salad pounded in a mortar with fish sauce, lime, palm sugar, dried shrimp, and bird&#8217;s eye chilli. Specify "mai pet" unless you can handle real Thai heat. Always eaten with sticky rice and grilled chicken (kai yang).</div>
+        <div class="food-where">&rarr; Som Tam Nua (Siam Square) &middot; Somtum Der</div>
+      </div>
+      <div class="food-item">
+        <div class="food-name">Pad Kra Pao</div>
+        <div class="food-desc">Holy basil stir-fry with pork mince (or chicken) and fresh chilli. Thailand&#8217;s real national dish &mdash; what Thais actually eat for lunch every day. Served with a fried egg on top over rice. Order with fresh chilli (prik sot) and specify your heat level.</div>
+        <div class="food-where">&rarr; Literally everywhere &mdash; this is what Thais eat daily</div>
+      </div>
+    </div>
+    <div>
+      <div class="food-col-name blue">Chiang Mai</div>
+      <div class="food-item">
+        <div class="food-name">Khao Soi</div>
+        <div class="food-desc">Chiang Mai&#8217;s signature dish: rich coconut curry broth with egg noodles, crispy fried noodles on top, chicken or beef, pickled mustard greens, and shallots. A northern Thai dish influenced by Yunnan Chinese cuisine. Nothing else like it in Thailand.</div>
+        <div class="food-where">&rarr; Huen Phen &middot; Khao Soi Lung Prakit Kad Kom &middot; Khao Soi Mae Sai</div>
+      </div>
+      <div class="food-item">
+        <div class="food-name">Sai Oua (Northern Sausage)</div>
+        <div class="food-desc">Chiang Mai&#8217;s herbal pork sausage packed with lemongrass, galangal, kaffir lime, and dried chilli. Grilled over charcoal and sold at every market in northern Thailand. Very different from any sausage you will eat elsewhere &mdash; fragrant, earthy, complex.</div>
+        <div class="food-where">&rarr; Warorot Market (Kad Luang) &middot; Somphet Market</div>
+      </div>
+      <div class="food-item">
+        <div class="food-name">Gaeng Hang Lay</div>
+        <div class="food-desc">Northern Thai pork belly curry with ginger, turmeric, tamarind, and Shan spice paste. Dark, intense, and slightly sweet &mdash; nothing like the coconut-based curries of the south. Eaten at room temperature over sticky rice. Found at markets and local restaurants.</div>
+        <div class="food-where">&rarr; Huen Phen back dining room &middot; local morning market stalls</div>
+      </div>
+      <div class="food-item">
+        <div class="food-name">Mango Sticky Rice</div>
+        <div class="food-desc">Glutinous sticky rice cooked in sweetened coconut milk, served with ripe champagne mango and a drizzle of thick coconut cream. Thailand&#8217;s most beloved dessert. Best when mango is in peak season (April&ndash;June). Available year-round but the quality swings significantly.</div>
+        <div class="food-where">&rarr; Mae Varee (Bangkok) &middot; market vendors everywhere in season</div>
+      </div>
+    </div>
+    <div>
+      <div class="food-col-name sth">Islands &mdash; Krabi &amp; Phi Phi</div>
+      <div class="food-item">
+        <div class="food-name">Grilled Whole Fish</div>
+        <div class="food-desc">The entire southern island seafood experience centres on whole fish &mdash; sea bass, red snapper, or grouper stuffed with lemongrass and lime leaf, grilled over charcoal, served with a ferocious seafood dipping sauce. Order by weight at any beach shack.</div>
+        <div class="food-where">&rarr; Beach BBQ vendors on Loh Dalum Bay &middot; Railay beach shacks</div>
+      </div>
+      <div class="food-item">
+        <div class="food-name">Tom Kha Gai</div>
+        <div class="food-desc">Coconut milk soup with galangal, lemongrass, and chicken &mdash; gentler and more fragrant than tom yum. The definitive island comfort food. Order it on every island and compare: the quality of the galangal-to-lime ratio changes everything.</div>
+        <div class="food-where">&rarr; Any Thai restaurant on Phi Phi, Railay, or Ao Nang</div>
+      </div>
+      <div class="food-item">
+        <div class="food-name">Massaman Curry</div>
+        <div class="food-desc">The south&#8217;s great slow-cooked curry &mdash; a Persian-influenced Muslim dish with beef or chicken, potatoes, peanuts, and warm spices (cinnamon, cardamom). Much milder and richer than Thai red or green curry. Once voted the world&#8217;s best food by CNN Travel.</div>
+        <div class="food-where">&rarr; Muslim restaurants in Krabi Town &middot; Ao Nang halal food stalls</div>
+      </div>
+      <div class="food-item">
+        <div class="food-name">Roti with Banana &amp; Condensed Milk</div>
+        <div class="food-desc">The southern Thai street dessert: a flaky fried flatbread (influenced by roti canai) cooked on a hot griddle, stuffed with banana, drizzled with condensed milk and chocolate sauce. Sold from night carts everywhere on the islands. Dangerous at midnight.</div>
+        <div class="food-where">&rarr; Any roti cart on Phi Phi, Ao Nang, or Patong</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHEN TO VISIT -->
+<section class="section section-alt">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2 class="section-title">When to <span>Visit</span></h2>
+  </div>
+  <div class="season-grid">
+    <div class="season-card best">
+      <span class="s-badge best">Peak Season</span>
+      <div class="s-name">Cool &amp; Dry</div>
+      <div class="s-months">November &mdash; February</div>
+      <div class="s-desc">The definitive best time for all three regions simultaneously. Bangkok is pleasantly warm (25&ndash;30&deg;C). Chiang Mai is genuinely cool, sometimes cold at night in December and January (pack a jacket). The Andaman islands are virtually rain-free.</div>
+      <ul class="s-list">
+        <li>Yi Peng sky lanterns in Chiang Mai (November)</li>
+        <li>Best sea conditions for Phi Phi and Krabi</li>
+        <li>Chiang Mai: bring a jacket for evenings Dec&ndash;Jan</li>
+        <li>Peak prices &mdash; book islands 3&ndash;6 months ahead</li>
+      </ul>
+    </div>
+    <div class="season-card good">
+      <span class="s-badge good">Good Value</span>
+      <div class="s-name">Hot Season</div>
+      <div class="s-months">March &mdash; May</div>
+      <div class="s-desc">Shoulder season: very hot and dry in Bangkok and the north (35&ndash;40&deg;C in April &mdash; extreme). Songkran water festival in mid-April is a uniquely chaotic and joyful experience. The Andaman islands remain excellent through April.</div>
+      <ul class="s-list">
+        <li>Songkran Thai New Year (13&ndash;15 April) &mdash; water fights nationwide</li>
+        <li>Lower prices than Nov&ndash;Feb peak</li>
+        <li>Bangkok is very hot in April &mdash; plan outdoor time carefully</li>
+        <li>Islands excellent through April, transitioning in May</li>
+      </ul>
+    </div>
+    <div class="season-card ok">
+      <span class="s-badge ok">Islands Risk</span>
+      <div class="s-name">SW Monsoon (Andaman)</div>
+      <div class="s-months">May &mdash; October</div>
+      <div class="s-desc">The Andaman Coast (Krabi, Phi Phi, Phuket) receives heavy monsoon rain and rough seas May&ndash;October. Ferries occasionally cancel. Bangkok and Chiang Mai are fine &mdash; if visiting during this window, replace the island leg with Koh Samui (Gulf Coast, opposite monsoon cycle).</div>
+      <ul class="s-list">
+        <li>Krabi and Phi Phi risky May&ndash;Oct</li>
+        <li>Bangkok and Chiang Mai still excellent</li>
+        <li>Off-season deals: 30&ndash;50% cheaper accommodation</li>
+        <li>Gulf Coast (Koh Samui) is the island alternative</li>
+      </ul>
+    </div>
+    <div class="season-card good">
+      <span class="s-badge good">North Only</span>
+      <div class="s-name">Post-Monsoon North</div>
+      <div class="s-months">October &mdash; November</div>
+      <div class="s-desc">Chiang Mai and northern Thailand are stunning in October&ndash;November after monsoon ends: lush green landscapes, waterfalls at full flow, cool mountain air. The Andaman starts drying out by November. A great transitional window for this exact itinerary.</div>
+      <ul class="s-list">
+        <li>Chiang Mai at its most lush and green</li>
+        <li>Yi Peng Lantern Festival in November</li>
+        <li>Islands transitioning into dry season by late November</li>
+        <li>Bangkok comfortable and less humid</li>
+      </ul>
+    </div>
+  </div>
+  <div style="background:var(--paper);padding:2rem;border-left:4px solid var(--th-red);">
+    <p style="font-size:.88rem;color:var(--muted);line-height:1.7;"><strong style="color:var(--ink);">Critical:</strong> Thailand has two distinct monsoon cycles. The <strong>Andaman Coast</strong> (Krabi, Phi Phi, Phuket) is affected by the southwest monsoon from May&ndash;October. The <strong>Gulf Coast</strong> (Koh Samui, Koh Phangan) has the opposite pattern &mdash; its rainy season is October&ndash;December. This itinerary uses the Andaman &mdash; always plan island dates for November through April.</p>
+  </div>
+</section>
+
+<!-- TRANSIT + IC CARDS -->
+<section class="section section-dark">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2 class="section-title">Transit &amp; <span>IC Cards</span></h2>
+  </div>
+  <div class="transport-grid">
+    <div>
+      <div class="t-section-title">Between Cities</div>
+      <div class="t-item">
+        <div class="t-icon">&#x2708;&#xFE0F;</div>
+        <div>
+          <div class="t-name">Domestic Flights (AirAsia / Nok Air / Thai Lion)</div>
+          <div class="t-desc">Essential for this itinerary &mdash; Bangkok to Chiang Mai (1h 20m) and Chiang Mai to Krabi (1h 40m) make flying the only practical option. AirAsia operates from Don Mueang Airport (DMK), which has better budget airline connections than Suvarnabhumi (BKK). Book 2&ndash;4 weeks ahead for good fares &mdash; last-minute prices spike sharply.</div>
+          <div class="t-cost">BKK&rarr;CNX: ~THB 900&ndash;2,200 &middot; CNX&rarr;KBV: ~THB 1,200&ndash;3,000 &middot; airasia.com</div>
+        </div>
+      </div>
+      <div class="t-item">
+        <div class="t-icon">&#x26F4;&#xFE0F;</div>
+        <div>
+          <div class="t-name">Ao Nang / Krabi &rarr; Koh Phi Phi (Ferry)</div>
+          <div class="t-desc">Ferry from Krabi Town&#8217;s Klong Jilad Pier (or Ao Nang beach pier) to Phi Phi Don takes approximately 2 hours. Kok Chang Ferry and Tiger Ferry are the main operators. Book through your hotel or at the pier. Check weather and sea conditions before booking &mdash; operates reliably November through April.</div>
+          <div class="t-cost">~THB 350&ndash;450 &middot; 2h crossing &middot; Reliable Nov&ndash;Apr only</div>
+        </div>
+      </div>
+      <div class="t-item">
+        <div class="t-icon">&#x26F4;&#xFE0F;</div>
+        <div>
+          <div class="t-name">Phi Phi &rarr; Phuket (Ferry) + HKT Airport</div>
+          <div class="t-desc">Ferry from Phi Phi to Phuket&#8217;s Rassada Pier takes 2 hours. Then Grab or taxi to Phuket International Airport (HKT) &mdash; approximately 30 minutes from the pier. Book the ferry the day before departure. Allows a morning on the island before the afternoon flight home &mdash; time it carefully.</div>
+          <div class="t-cost">Ferry: ~THB 250&ndash;350 &middot; Taxi Rassada Pier&rarr;HKT: ~THB 350&ndash;450</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="t-section-title">City Transit &amp; IC Cards</div>
+      <div class="t-item">
+        <div class="t-icon">&#x1F4B3;</div>
+        <div>
+          <div class="t-name">Rabbit Card &mdash; Bangkok BTS Skytrain</div>
+          <div class="t-desc">The BTS Skytrain (above-ground) uses the Rabbit Card &mdash; a stored-value card that also works at Tops Supermarket, Starbucks, and many convenience stores. Buy at any BTS station ticket window for THB 100 (THB 30 deposit + THB 50 credit + THB 20 admin). Top up at ticket machines. Covers the main tourist zones: Silom, Sukhumvit, Siam, and the airport link interchange.</div>
+          <div class="t-cost">BTS Rabbit Card: THB 100 at any station &middot; Fare per trip: THB 16&ndash;59</div>
+        </div>
+      </div>
+      <div class="t-item">
+        <div class="t-icon">&#x1F687;</div>
+        <div>
+          <div class="t-name">MRT Card &mdash; Bangkok Subway</div>
+          <div class="t-desc">The MRT underground uses a separate card from the BTS. Stored-value MRT cards work on the Blue Line and Purple Line. For a short visit, single-trip tokens from machines are easier. Key MRT stops: Chatuchak Park (weekend market), Sukhumvit (BTS interchange), Hua Lamphong (train station), Sam Yan (near Chinatown). The BTS and MRT systems are not interoperable.</div>
+          <div class="t-cost">Single trip token: THB 17&ndash;42 &middot; MRT card available at all stations</div>
+        </div>
+      </div>
+      <div class="t-item">
+        <div class="t-icon">&#x1F697;</div>
+        <div>
+          <div class="t-name">Grab + Bolt &mdash; Bangkok &amp; Chiang Mai</div>
+          <div class="t-desc">Both Grab and Bolt operate in Bangkok &mdash; Bolt is often 20&ndash;30% cheaper for short city trips. In Chiang Mai, Grab dominates (traditional tuk-tuks quote inflated tourist prices &mdash; always use Grab instead). On the islands, there&#8217;s no ride-hailing &mdash; negotiate long-tail boat fares directly or hire motorbike taxis (wear the helmet they hand you).</div>
+          <div class="t-cost">Bangkok short trip (Grab): ~THB 60&ndash;150 &middot; Chiang Mai: ~THB 60&ndash;100</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ESSENTIAL CHAINS & SHOPPING -->
+<section class="section section-dark" style="background:#100e20;">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <h2 class="section-title">Essential Chains <span>&amp; Shopping</span></h2>
+  </div>
+
+  <div style="font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;color:var(--th-gold-lt);margin-bottom:1.5rem;">&#x1F3EA; Convenience &amp; Food Chains</div>
+  <div class="shop-grid" style="margin-bottom:3rem;">
+    <div class="shop-item">
+      <span class="shop-emoji">&#x1F3EA;</span>
+      <div class="shop-name">7-Eleven Thailand</div>
+      <div class="shop-sub">~14,000 locations &middot; 24 hours &middot; genuinely excellent</div>
+      <div class="shop-desc">Thailand has more 7-Elevens per capita than almost anywhere, and they are genuinely good. The hot counter (look for the orange heat lamp) has freshly fried chicken, pork skewers, and fish balls for THB 15&ndash;25 each. Fresh rice sandwiches, steamed buns, and cold Chang beer are staples. The Meiji ice cream bars and banana milk are cult items among regulars. ATMs inside accept all cards.</div>
+      <div class="shop-tip">Hot counter items at THB 20 each are the best value snack in Bangkok. Ministop (a rival chain) has better fried chicken and excellent soft-serve.</div>
+    </div>
+    <div class="shop-item">
+      <span class="shop-emoji">&#x2615;</span>
+      <div class="shop-name">Caf&eacute; Amazon</div>
+      <div class="shop-sub">~4,500 locations &middot; Thailand&#8217;s biggest caf&eacute; chain</div>
+      <div class="shop-desc">Thailand&#8217;s PTT petrol station caf&eacute; chain has become the most ubiquitous coffee stop in the country &mdash; found at every highway rest stop, airport, shopping mall, and many standalone roadside locations. The Thai iced tea latte and coconut coffee are genuinely excellent at THB 55&ndash;75. Clean A/C seating, reliable WiFi, and consistent quality make it a lifesaver in the heat between sightseeing.</div>
+      <div class="shop-tip">Order the Butterfly Pea Lemonade &mdash; vibrant blue-purple colour, refreshing, and photogenic. Also excellent: the Thai Tea Latte Frappe.</div>
+    </div>
+    <div class="shop-item">
+      <span class="shop-emoji">&#x1F6D2;</span>
+      <div class="shop-name">Lotus&#8217;s (Tesco) &amp; Big C</div>
+      <div class="shop-sub">Major hypermarkets &middot; everywhere outside islands</div>
+      <div class="shop-desc">Lotus&#8217;s (formerly Tesco Lotus) and Big C are Thailand&#8217;s dominant hypermarket chains &mdash; massive, fully air-conditioned, and carrying everything from excellent Thai prepared snacks to pharmacies and cheap clothing. The food halls inside are great value for snacks and drinks. Also the best place to buy cheap sunscreen, toiletries, and Mama instant noodles for the islands.</div>
+      <div class="shop-tip">Buy Mama instant noodles in bulk (THB 6 each), Thai seasoning sachets, and snack mixes here &mdash; pack them for island accommodation where food options are limited and pricey.</div>
+    </div>
+  </div>
+
+  <div style="font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;color:var(--th-gold-lt);margin-bottom:1.5rem;">&#x1F6CD;&#xFE0F; Markets &amp; Shopping</div>
+  <div class="shop-grid">
+    <div class="shop-item">
+      <span class="shop-emoji">&#x1F3EA;</span>
+      <div class="shop-name">Chatuchak Weekend Market &mdash; Bangkok</div>
+      <div class="shop-sub">Saturday &amp; Sunday &middot; 8 AM&ndash;6 PM &middot; 15,000+ stalls</div>
+      <div class="shop-desc">One of the world&#8217;s great markets &mdash; 35 acres, 15,000 stalls, and organised into sections: plants, antiques, vintage clothing, ceramics, art, pets, and food. Get the official map at the entrance. Section 26&ndash;27: ceramics and Thai stoneware. Section 18: vintage and mid-century clothing. The food stalls inside Section 27 serve excellent and cheap Thai food. Arrive before 10 AM to avoid the heat and crowds.</div>
+      <div class="shop-tip">Bring cash (THB). ATMs are scarce inside. Section 26: ceramics. Section 18: vintage. Food: go to Section 27 for the best stalls inside the market.</div>
+    </div>
+    <div class="shop-item">
+      <span class="shop-emoji">&#x1F315;</span>
+      <div class="shop-name">Chiang Mai Walking Streets</div>
+      <div class="shop-sub">Saturday: Wualai Rd &middot; Sunday: Tha Phae Gate &middot; 4 PM&ndash;midnight</div>
+      <div class="shop-desc">Chiang Mai&#8217;s walking markets are the best place to buy northern Thai handicrafts: hand-painted parasols, hill tribe textiles, silver jewellery, carved teak goods, and indigo-dyed cotton. The Sunday market on Wichayanon Street (north from Tha Phae Gate) is the larger and more artisanal of the two. The Warorot covered market nearby is the local daily market &mdash; best for sai oua sausage and local produce.</div>
+      <div class="shop-tip">Best buys: hand-painted silk parasols (THB 200&ndash;400), hill tribe shoulder bags, lacquerware bowls, and northern Thai weaving. All significantly cheaper than Bangkok airport.</div>
+    </div>
+    <div class="shop-item">
+      <span class="shop-emoji">&#x1F30A;</span>
+      <div class="shop-name">Island Shopping &mdash; Krabi &amp; Phi Phi</div>
+      <div class="shop-sub">Beach markets &middot; Ao Nang walking street &middot; Tonsai pier shops</div>
+      <div class="shop-desc">The Ao Nang beachfront walking street has a cluster of souvenir shops, tailor stalls, and dive equipment stores. Phi Phi&#8217;s Tonsai Bay has a tight grid of shops selling the same sarongs, elephant print trousers, and hand-painted magnets everywhere in Thailand. Buy beach essentials (rash guards, waterproof bags) here &mdash; everything is modestly priced and readily available.</div>
+      <div class="shop-tip">Best island buys: reef-safe sunscreen (cheaper here than at home), waterproof dry bags for kayaking, carved wooden fridge magnets, and woven palm leaf hats.</div>
+    </div>
+  </div>
+</section>
+
+<!-- BUDGET -->
+<section class="section section-alt">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <h2 class="section-title">Budget <span>Breakdown</span></h2>
+  </div>
+  <div class="budget-layout">
+    <div>
+      <div class="b-item">
+        <div class="b-header"><span class="b-label">&#x1F3E8; Accommodation (10 nights avg. $55/night)</span><span class="b-amount">~$550</span></div>
+        <div class="b-track"><div class="b-fill" style="width:50%"></div></div>
+      </div>
+      <div class="b-item">
+        <div class="b-header"><span class="b-label">&#x1F35C; Food &amp; Drink (~$30/day)</span><span class="b-amount">~$300</span></div>
+        <div class="b-track"><div class="b-fill" style="width:27%"></div></div>
+      </div>
+      <div class="b-item">
+        <div class="b-header"><span class="b-label">&#x2708;&#xFE0F; Domestic flights (BKK&rarr;CNX + CNX&rarr;KBV)</span><span class="b-amount">~$120</span></div>
+        <div class="b-track"><div class="b-fill" style="width:11%"></div></div>
+      </div>
+      <div class="b-item">
+        <div class="b-header"><span class="b-label">&#x26F4;&#xFE0F; Ferries (Krabi&rarr;Phi Phi + Phi Phi&rarr;Phuket)</span><span class="b-amount">~$40</span></div>
+        <div class="b-track"><div class="b-fill" style="width:4%"></div></div>
+      </div>
+      <div class="b-item">
+        <div class="b-header"><span class="b-label">&#x1F687; Local transit (BTS + MRT + Grab)</span><span class="b-amount">~$55</span></div>
+        <div class="b-track"><div class="b-fill" style="width:5%"></div></div>
+      </div>
+      <div class="b-item">
+        <div class="b-header"><span class="b-label">&#x1F3AB; Activities (Elephant Park, tours, temples)</span><span class="b-amount">~$130</span></div>
+        <div class="b-track"><div class="b-fill" style="width:12%"></div></div>
+      </div>
+      <div class="b-item">
+        <div class="b-header"><span class="b-label">&#x1F6CD;&#xFE0F; Shopping &amp; Souvenirs</span><span class="b-amount">~$120</span></div>
+        <div class="b-track"><div class="b-fill" style="width:11%"></div></div>
+      </div>
+      <p style="font-size:.78rem;color:var(--muted);margin-top:1rem;">* Island accommodation (Phi Phi, Railay area) is pricier than the mainland &mdash; budget $80&ndash;150/night for a decent beachside bungalow. Elephant Nature Park (~$80/person) is the single largest activity expense but absolutely worth every baht.</p>
+    </div>
+    <div class="b-summary">
+      <div class="b-sum-label">Estimated Total (Per Person)</div>
+      <div class="b-sum-num">~$1,315</div>
+      <div class="b-sum-sub">Including intra-Thailand flights &middot; 10 nights &middot; Mid-range</div>
+      <ul class="b-breakdown">
+        <li><span>Without domestic flights</span><span>~$1,195</span></li>
+        <li><span>Daily spend excl. flights</span><span>~$119/day</span></li>
+        <li><span>Budget traveler daily</span><span>~$50&ndash;70</span></li>
+        <li><span>Mid-range (this plan)</span><span>~$100&ndash;140/day</span></li>
+        <li><span>Elephant Nature Park</span><span>~THB 2,800 (~$80)</span></div>
+        <li><span>Island bungalow (Phi Phi)</span><span>$60&ndash;150/night</span></li>
+        <li><span>SIM card (30 days, 15 GB)</span><span>~THB 299 (~$9)</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- TIPS -->
+<section class="section">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <h2 class="section-title">Insider <span>Tips</span></h2>
+  </div>
+  <div class="tips-grid">
+    <div class="tip-card">
+      <span class="tip-icon">&#x1F6B2;</span>
+      <div class="tip-title">Book Elephant Nature Park Weeks Ahead</div>
+      <p class="tip-body">ENP is one of the world&#8217;s most reputable ethical elephant sanctuaries and it books out weeks in advance during peak season (Nov&ndash;Feb). Go to elephantnaturepark.org directly &mdash; do not book through a third party. Full-day visit (~$80) includes transport, meals, and a guide. Never visit any sanctuary that offers elephant riding.</p>
+    </div>
+    <div class="tip-card">
+      <span class="tip-icon">&#x1F338;</span>
+      <div class="tip-title">Temple Dress Code Is Non-Negotiable</div>
+      <p class="tip-body">Shoulders and knees must be covered at every temple in Thailand &mdash; including the Grand Palace, Doi Suthep, and all wats in Chiang Mai. Many provide free sarongs at the entrance, but a lightweight scarf or long trousers packed for the day is cooler and faster. Grand Palace staff will turn you away at the gate.</p>
+    </div>
+    <div class="tip-card">
+      <span class="tip-icon">&#x1F30A;</span>
+      <div class="tip-title">Maya Bay: Dawn or Nothing</div>
+      <p class="tip-body">Maya Bay was closed for three years to allow coral recovery and now admits a maximum daily visitor quota. Long-tail boats to Maya Bay leave Phi Phi&#8217;s Tonsai Pier from 6 AM. Arrive before 7:30 AM for the golden light and dramatically fewer people. By 10 AM the quota fills and the experience degrades significantly. Book your longtail the evening before.</p>
+    </div>
+    <div class="tip-card">
+      <span class="tip-icon">&#x1F4B5;</span>
+      <div class="tip-title">Cash, Taxi Meters &amp; Tipping</div>
+      <p class="tip-body">Thailand is largely cash-based outside hotels. Use Grab in cities to avoid meter disputes, but for Bangkok taxis always insist on the meter &mdash; say "meter khap/ka" firmly. Tipping: 20&ndash;40 THB at restaurants is generous, 100 THB at spa treatments. Carry THB 500&ndash;1,000 at all times; islands have limited ATMs and cards are often refused at small beach stalls.</p>
+    </div>
+    <div class="tip-card">
+      <span class="tip-icon">&#x1F334;</span>
+      <div class="tip-title">Don Mueang (DMK) vs Suvarnabhumi (BKK)</div>
+      <p class="tip-body">Bangkok has two airports. Suvarnabhumi (BKK) is the main international gateway. Don Mueang (DMK) handles most budget domestic airlines (AirAsia, Nok Air, Thai Lion). Check which airport your domestic flights use and allow 1.5&ndash;2h transit between the two by taxi or Grab if you&#8217;re connecting on the same trip. They are 30 km apart.</p>
+    </div>
+    <div class="tip-card">
+      <span class="tip-icon">&#x1F64F;</span>
+      <div class="tip-title">Cultural Respect in the Kingdom</div>
+      <p class="tip-body">Never point your feet at a Buddha image or at a person &mdash; feet are considered the lowest, least sacred part of the body. Do not touch a monk&#8217;s robes (women especially). The King and royal family are deeply revered &mdash; any criticism is illegal and deeply offensive. Remove shoes when entering any home, temple, or traditional business.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <strong>Thailand Travel Guide</strong> &middot; Bangkok &middot; Chiang Mai &middot; Krabi &middot; Phi Phi &middot; 10 Nights &middot; Prices in USD approx. &middot; Always verify hours &amp; book tickets before travel
+</footer>
+
+</body>
+</html>

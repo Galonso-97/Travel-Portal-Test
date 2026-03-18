@@ -1,0 +1,1820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>China — A Two-Week Journey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Shippori+Mincho:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root {
+    --cream: #f5f0e8;
+    --cream-dark: #ede5d3;
+    --cream-deeper: #e4d9c3;
+    --ink: #1a1410;
+    --ink-mid: #3d3028;
+    --ink-light: #6b5c4e;
+    --ink-faint: #9c8c7e;
+    --red: #b5312a;
+    --red-light: #d9534f;
+    --gold: #c9973a;
+    --gold-light: #e8c068;
+    --jade: #3a7a5e;
+    --jade-light: #5a9e7a;
+    --rule: rgba(60,40,20,.18);
+    --shadow: rgba(30,15,5,.12);
+    --serif: 'Playfair Display', 'Georgia', serif;
+    --mincho: 'Shippori Mincho', 'Georgia', serif;
+    --body: 'EB Garamond', 'Georgia', serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.75;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: .5;
+  }
+
+  /* ── PROGRESS BAR ── */
+  #progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--red), var(--gold));
+    width: 0%;
+    z-index: 1000;
+    transition: width .1s linear;
+  }
+
+  /* ── NAVIGATION ── */
+  nav {
+    position: sticky;
+    top: 0;
+    background: rgba(245,240,232,.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--rule);
+    z-index: 100;
+    padding: .6rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav::-webkit-scrollbar { display: none; }
+  nav a {
+    color: var(--ink-light);
+    text-decoration: none;
+    font-family: var(--mincho);
+    font-size: .78rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    padding: .25rem .5rem;
+    transition: color .2s;
+  }
+  nav a:hover, nav a.active { color: var(--red); }
+  nav .sep { color: var(--rule); font-size: .7rem; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 5rem 2rem 4rem;
+    position: relative;
+    overflow: hidden;
+    background: var(--ink);
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1508804185872-d7badad00f7d?auto=format&fit=crop&w=1920&q=80');
+    background-size: cover;
+    background-position: center 40%;
+    opacity: 0.75;
+    transform: scale(1.04);
+    animation: heroZoom 18s ease-in-out infinite alternate;
+  }
+
+  @keyframes heroZoom {
+    from { transform: scale(1.04); }
+    to   { transform: scale(1.10); }
+  }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to bottom,
+        rgba(6,3,2,.45) 0%,
+        rgba(6,3,2,.30) 35%,
+        rgba(6,3,2,.42) 70%,
+        rgba(6,3,2,.75) 100%);
+  }
+
+  /* override text colours for dark hero */
+  .hero .hero-eyebrow { color: var(--gold-light); text-shadow: 0 1px 8px rgba(0,0,0,.8); }
+  .hero h1 { color: #fff; text-shadow: 0 2px 20px rgba(0,0,0,.7); }
+  .hero h1 em { color: var(--gold-light); text-shadow: 0 2px 20px rgba(0,0,0,.7); }
+  .hero-sub { color: rgba(255,255,255,.95); text-shadow: 0 1px 12px rgba(0,0,0,.9); font-weight: 500; }
+  .hero-route span { color: #ffffff; text-shadow: 0 1px 8px rgba(0,0,0,.9); }
+  .hero-route .arrow { color: var(--gold-light); }
+  .hero-meta-item .num { color: var(--gold-light); text-shadow: 0 1px 8px rgba(0,0,0,.7); }
+  .hero-meta-item .label { color: rgba(255,255,255,.75); text-shadow: 0 1px 6px rgba(0,0,0,.8); letter-spacing: .15em; }
+  .hero-seal { color: var(--gold-light); opacity: .25; text-shadow: 0 2px 12px rgba(0,0,0,.6); }
+  .scroll-cue { color: rgba(255,255,255,.5); }
+
+  /* Chinese pattern border */
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 6px;
+    background: repeating-linear-gradient(
+      90deg,
+      var(--red) 0px, var(--red) 12px,
+      var(--gold) 12px, var(--gold) 24px,
+      var(--red) 24px, var(--red) 36px,
+      transparent 36px, transparent 48px
+    );
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 6px;
+    background: repeating-linear-gradient(
+      90deg,
+      var(--red) 0px, var(--red) 12px,
+      var(--gold) 12px, var(--gold) 24px,
+      var(--red) 24px, var(--red) 36px,
+      transparent 36px, transparent 48px
+    );
+  }
+
+  .hero-seal {
+    font-family: var(--mincho);
+    font-size: 2.5rem;
+    color: var(--red);
+    opacity: .15;
+    letter-spacing: .05em;
+    line-height: 1;
+    margin-bottom: 1rem;
+    animation: fadeIn 1.2s ease both;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--mincho);
+    font-size: .75rem;
+    letter-spacing: .35em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: .75rem;
+    animation: fadeIn 1s ease .2s both;
+  }
+
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -.02em;
+    color: var(--ink);
+    animation: fadeUp 1s ease .3s both;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--red);
+  }
+
+  .hero-sub {
+    font-family: var(--body);
+    font-style: italic;
+    font-size: 1.25rem;
+    color: #ffffff;
+    text-shadow: 0 1px 14px rgba(0,0,0,1), 0 2px 28px rgba(0,0,0,.9);
+    font-weight: 500;
+    margin-top: 1rem;
+    animation: fadeUp 1s ease .5s both;
+  }
+
+  .hero-route {
+    margin-top: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: fadeUp 1s ease .7s both;
+    background: rgba(0,0,0,.6);
+    border: 1px solid rgba(255,255,255,.15);
+    backdrop-filter: blur(6px);
+    padding: .55rem 1.4rem;
+    border-radius: 2px;
+  }
+
+  .hero-route span {
+    font-family: var(--mincho);
+    font-size: .88rem;
+    letter-spacing: .1em;
+    color: #ffffff;
+    text-shadow: 0 1px 8px rgba(0,0,0,.9);
+  }
+
+  .hero-route .arrow {
+    color: var(--gold-light);
+    font-size: .8rem;
+  }
+
+  .hero-meta {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 2.5rem;
+    animation: fadeUp 1s ease .9s both;
+  }
+
+  .hero-meta-item {
+    text-align: center;
+  }
+
+  .hero-meta-item .num {
+    font-family: var(--serif);
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--gold-light);
+    text-shadow: 0 1px 10px rgba(0,0,0,.9);
+    display: block;
+  }
+
+  .hero-meta-item .label {
+    font-family: var(--mincho);
+    font-size: .76rem;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: #ffffff;
+    text-shadow: 0 1px 10px rgba(0,0,0,1), 0 2px 20px rgba(0,0,0,.9);
+  }
+
+  .scroll-cue {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .4rem;
+    color: var(--ink-faint);
+    font-family: var(--mincho);
+    font-size: .7rem;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    animation: fadeIn 1s ease 1.4s both;
+  }
+
+  .scroll-cue .line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--ink-faint), transparent);
+    animation: lineGrow 1.5s ease 1.6s infinite;
+  }
+
+  /* ── SECTION LAYOUT ── */
+  section {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 5rem 6vw;
+    position: relative;
+  }
+
+  section + section { border-top: 1px solid var(--rule); }
+
+  .ghost-num {
+    position: absolute;
+    top: 3.5rem;
+    right: 1.5rem;
+    font-family: var(--serif);
+    font-size: 8rem;
+    font-weight: 700;
+    color: rgba(181,49,42,.05);
+    line-height: 1;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .section-label {
+    font-family: var(--mincho);
+    font-size: .72rem;
+    letter-spacing: .3em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+  }
+
+  .section-label::after {
+    content: '';
+    display: block;
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--red), transparent);
+    opacity: .3;
+  }
+
+  h2 {
+    font-family: var(--serif);
+    font-size: clamp(1.9rem, 4vw, 2.8rem);
+    font-weight: 400;
+    line-height: 1.15;
+    letter-spacing: -.015em;
+    margin-bottom: 1.5rem;
+    color: var(--ink);
+  }
+
+  h2 em {
+    font-style: italic;
+    color: var(--red);
+  }
+
+  h3 {
+    font-family: var(--serif);
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--ink-mid);
+    margin: 2rem 0 .75rem;
+  }
+
+  p { margin-bottom: 1em; color: var(--ink-mid); max-width: 780px; }
+  p:last-child { margin-bottom: 0; }
+
+  /* ── INTRO PULL QUOTE ── */
+  .pull-quote {
+    border-left: 3px solid var(--red);
+    padding: 1.2rem 1.8rem;
+    margin: 2.5rem 0;
+    background: rgba(181,49,42,.03);
+  }
+
+  .pull-quote p {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.18rem;
+    line-height: 1.65;
+    color: var(--ink-mid);
+  }
+
+  /* ── MAP ── */
+  #map-section { padding-bottom: 2rem; }
+
+  #route-map {
+    width: 100%;
+    height: 480px;
+    border-radius: 2px;
+    border: 1px solid var(--cream-deeper);
+    box-shadow: 0 4px 24px var(--shadow);
+    margin-top: 2rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .map-legend {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+    font-family: var(--mincho);
+    font-size: .78rem;
+    letter-spacing: .05em;
+    color: var(--ink-light);
+  }
+
+  .map-legend span { display: flex; align-items: center; gap: .4rem; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+  /* ── ITINERARY ── */
+  .day-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+
+  .day-card {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 0 1.5rem;
+    align-items: start;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity .5s ease, transform .5s ease;
+  }
+
+  .day-card.visible { opacity: 1; transform: translateY(0); }
+
+  .day-num {
+    font-family: var(--serif);
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--red);
+    line-height: 1;
+    text-align: right;
+    padding-top: .15rem;
+  }
+
+  .day-num sub {
+    font-size: .7rem;
+    color: var(--ink-faint);
+    font-family: var(--mincho);
+    font-weight: 400;
+    letter-spacing: .05em;
+    vertical-align: middle;
+    display: block;
+    line-height: 1.2;
+    margin-top: .1rem;
+  }
+
+  .day-content {
+    border-left: 1px solid var(--cream-deeper);
+    padding-left: 1.5rem;
+    padding-bottom: 1rem;
+  }
+
+  .day-city {
+    font-family: var(--mincho);
+    font-size: .7rem;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: .2rem;
+  }
+
+  .day-title {
+    font-family: var(--serif);
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: .5rem;
+  }
+
+  .day-text { font-size: .95rem; line-height: 1.65; color: var(--ink-mid); }
+
+  .day-highlights {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem;
+    margin-top: .75rem;
+  }
+
+  .tag {
+    font-family: var(--mincho);
+    font-size: .7rem;
+    letter-spacing: .06em;
+    color: var(--ink-light);
+    border: 1px solid var(--cream-deeper);
+    padding: .15rem .5rem;
+    border-radius: 2px;
+    background: rgba(255,255,255,.5);
+  }
+
+  .tag.food { border-color: rgba(201,151,58,.4); color: var(--gold); }
+  .tag.sight { border-color: rgba(181,49,42,.3); color: var(--red); }
+  .tag.tip { border-color: rgba(58,122,94,.3); color: var(--jade); }
+
+  /* ── CITY DIVIDERS ── */
+  .city-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin: 3rem 0 1.5rem;
+    padding: 1.2rem 1.5rem;
+    background: var(--cream-dark);
+    border-left: 4px solid var(--red);
+  }
+
+  .city-header-num {
+    font-family: var(--serif);
+    font-size: 3rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--red);
+    opacity: .5;
+    line-height: 1;
+  }
+
+  .city-header-info h3 {
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin: 0 0 .15rem;
+    color: var(--ink);
+  }
+
+  .city-header-info p {
+    font-family: var(--mincho);
+    font-size: .75rem;
+    letter-spacing: .08em;
+    color: var(--ink-faint);
+    margin: 0;
+  }
+
+  /* ── BUDGET ── */
+  .budget-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .budget-tier {
+    padding: 1.5rem;
+    background: var(--cream-dark);
+    border: 1px solid var(--cream-deeper);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .budget-tier.featured {
+    background: var(--ink);
+    color: var(--cream);
+    border-color: var(--ink);
+  }
+
+  .budget-tier.featured .tier-name { color: var(--gold-light); }
+  .budget-tier.featured .tier-price { color: var(--cream); }
+  .budget-tier.featured p { color: rgba(245,240,232,.7); }
+
+  .tier-name {
+    font-family: var(--mincho);
+    font-size: .72rem;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: .4rem;
+  }
+
+  .tier-price {
+    font-family: var(--serif);
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--red);
+    line-height: 1;
+    margin-bottom: .5rem;
+  }
+
+  .tier-price span {
+    font-size: .85rem;
+    font-family: var(--mincho);
+    font-weight: 400;
+    color: var(--ink-faint);
+  }
+
+  .budget-bars { margin-top: 2.5rem; max-width: 700px; }
+
+  .bar-row {
+    display: grid;
+    grid-template-columns: 130px 1fr 60px;
+    align-items: center;
+    gap: .75rem;
+    margin-bottom: 1rem;
+  }
+
+  .bar-label {
+    font-family: var(--mincho);
+    font-size: .78rem;
+    letter-spacing: .05em;
+    color: var(--ink-light);
+    text-align: right;
+  }
+
+  .bar-track {
+    height: 6px;
+    background: var(--cream-deeper);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    width: 0%;
+    transition: width 1.2s cubic-bezier(.22,1,.36,1);
+    background: linear-gradient(90deg, var(--red), var(--gold));
+  }
+
+  .bar-fill.jade { background: linear-gradient(90deg, var(--jade), var(--jade-light)); }
+  .bar-fill.gold { background: linear-gradient(90deg, var(--gold), var(--gold-light)); }
+
+  .bar-pct {
+    font-family: var(--mincho);
+    font-size: .75rem;
+    color: var(--ink-faint);
+    text-align: left;
+  }
+
+  /* ── FOOD ── */
+  .food-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1px;
+    background: var(--cream-deeper);
+    margin-top: 2rem;
+    border: 1px solid var(--cream-deeper);
+  }
+
+  .food-card {
+    background: var(--cream);
+    padding: 1.3rem;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity .4s ease, transform .4s ease, background .2s;
+  }
+
+  .food-card:hover { background: var(--cream-dark); }
+  .food-card.visible { opacity: 1; transform: translateY(0); }
+
+  .food-city {
+    font-family: var(--mincho);
+    font-size: .65rem;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: .3rem;
+  }
+
+  .food-name {
+    font-family: var(--serif);
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: .3rem;
+  }
+
+  .food-desc {
+    font-size: .85rem;
+    color: var(--ink-light);
+    line-height: 1.5;
+  }
+
+  /* ── TRANSPORT ── */
+  .transport-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .transport-card {
+    padding: 1.25rem;
+    background: var(--cream-dark);
+    border-bottom: 2px solid var(--red);
+  }
+
+  .transport-icon {
+    font-size: 1.8rem;
+    margin-bottom: .5rem;
+    display: block;
+  }
+
+  .transport-type {
+    font-family: var(--mincho);
+    font-size: .7rem;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: .3rem;
+  }
+
+  .transport-name {
+    font-family: var(--serif);
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: .4rem;
+  }
+
+  .transport-desc { font-size: .83rem; color: var(--ink-light); line-height: 1.5; }
+
+  /* ── PRACTICAL ── */
+  .practical-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .practical-card {
+    border-top: 2px solid var(--ink);
+    padding-top: 1rem;
+  }
+
+  .practical-card h4 {
+    font-family: var(--serif);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: .75rem;
+    color: var(--ink);
+  }
+
+  .practical-card ul {
+    list-style: none;
+    font-size: .88rem;
+    color: var(--ink-mid);
+    line-height: 1.7;
+  }
+
+  .practical-card ul li::before {
+    content: '—';
+    color: var(--red);
+    margin-right: .5rem;
+  }
+
+  /* ── SEASONAL ── */
+  .season-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--cream-deeper);
+    margin-top: 2rem;
+  }
+
+  .season-card {
+    background: var(--cream);
+    padding: 1.3rem;
+    transition: background .2s;
+  }
+
+  .season-card:hover { background: var(--cream-dark); }
+
+  .season-name {
+    font-family: var(--serif);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: .2rem;
+    color: var(--ink);
+  }
+
+  .season-months {
+    font-family: var(--mincho);
+    font-size: .68rem;
+    letter-spacing: .08em;
+    color: var(--ink-faint);
+    margin-bottom: .6rem;
+  }
+
+  .season-rating {
+    display: flex;
+    gap: 2px;
+    margin-bottom: .5rem;
+  }
+
+  .star { color: var(--gold); font-size: .9rem; }
+  .star.dim { color: var(--cream-deeper); }
+
+  .season-desc { font-size: .82rem; color: var(--ink-light); line-height: 1.55; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--rule);
+    text-align: center;
+    padding: 3rem 2rem;
+    font-family: var(--mincho);
+    font-size: .75rem;
+    letter-spacing: .1em;
+    color: var(--ink-faint);
+  }
+
+  footer .footer-title {
+    font-family: var(--serif);
+    font-size: 1.3rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--ink-mid);
+    margin-bottom: .5rem;
+  }
+
+  /* ── DECORATIVE ── */
+  .ornament {
+    text-align: center;
+    color: var(--red);
+    opacity: .25;
+    font-size: 1.2rem;
+    letter-spacing: .5em;
+    margin: 2rem 0;
+    user-select: none;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes lineGrow {
+    0%, 100% { transform: scaleY(0); transform-origin: top; opacity: 0; }
+    50% { transform: scaleY(1); transform-origin: top; opacity: 1; }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: .5rem 1rem; }
+    section { padding: 3rem 5vw; }
+    .hero { padding: 3rem 1.5rem; }
+    .hero h1 { font-size: 3rem; }
+    .hero-meta { gap: 1.5rem; }
+    .season-grid { grid-template-columns: repeat(2, 1fr); }
+    .budget-grid { grid-template-columns: 1fr; }
+    .ghost-num { font-size: 5rem; }
+    .day-card { grid-template-columns: 50px 1fr; }
+    .bar-row { grid-template-columns: 100px 1fr 50px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<nav id="main-nav">
+  <a href="#route">Route</a>
+  <span class="sep">·</span>
+  <a href="#itinerary">Itinerary</a>
+  <span class="sep">·</span>
+  <a href="#food">Food</a>
+  <span class="sep">·</span>
+  <a href="#transport">Transport</a>
+  <span class="sep">·</span>
+  <a href="#budget">Budget</a>
+  <span class="sep">·</span>
+  <a href="#seasons">Seasons</a>
+  <span class="sep">·</span>
+  <a href="#practical">Essentials</a>
+</nav>
+
+<!-- ══ HERO ══ -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-seal">中国</div>
+  <div class="hero-eyebrow">Two Weeks · Six Cities</div>
+  <h1><em>China</em></h1>
+  <p class="hero-sub">From imperial capitals to limestone peaks — a journey through the Middle Kingdom</p>
+
+  <div class="hero-route">
+    <span>Beijing</span>
+    <span class="arrow">→</span>
+    <span>Xi'an</span>
+    <span class="arrow">→</span>
+    <span>Zhangjiajie</span>
+    <span class="arrow">→</span>
+    <span>Chongqing</span>
+    <span class="arrow">→</span>
+    <span>Guilin</span>
+    <span class="arrow">→</span>
+    <span>Shanghai</span>
+  </div>
+
+  <div class="hero-meta">
+    <div class="hero-meta-item"><span class="num">14</span><span class="label">Days</span></div>
+    <div class="hero-meta-item"><span class="num">6</span><span class="label">Cities</span></div>
+    <div class="hero-meta-item"><span class="num">~€1,500</span><span class="label">Mid Budget</span></div>
+    <div class="hero-meta-item"><span class="num">3,200km</span><span class="label">Route Length</span></div>
+  </div>
+
+  <div class="scroll-cue">
+    <span>Scroll</span>
+    <div class="line"></div>
+  </div>
+</div>
+
+
+<!-- ══ ROUTE MAP ══ -->
+<section id="route">
+  <div class="ghost-num">一</div>
+  <div class="section-label">The Route</div>
+  <h2>Six cities, <em>one arc</em></h2>
+  <p>The itinerary traces a deliberate arc: north to centre, deep inland to the karst south, then east to the coast. Every transit is either a scenic high-speed train or a short flight — no overnight buses.</p>
+
+  <div id="route-map"></div>
+
+  <div class="map-legend">
+    <span><span class="dot" style="background:var(--red)"></span> City stops</span>
+    <span><span class="dot" style="background:var(--gold)"></span> Day-trip points</span>
+    <span><span class="dot" style="background:var(--jade)"></span> Route path</span>
+  </div>
+</section>
+
+<!-- ══ ITINERARY ══ -->
+<section id="itinerary">
+  <div class="ghost-num">三</div>
+  <div class="section-label">Day-by-Day Itinerary</div>
+  <h2><em>Fourteen days</em> in the Middle Kingdom</h2>
+  <p>Each day is planned to be immersive but never frantic. Morning light almost always rewards early risers — especially at the Great Wall, on the Li River, and inside the Forbidden City before the crowds arrive.</p>
+
+  <!-- ── BEIJING ── -->
+  <div class="city-header">
+    <div class="city-header-num">I</div>
+    <div class="city-header-info">
+      <h3>Beijing 北京</h3>
+      <p>Days 1 – 3 &nbsp;·&nbsp; Imperial China at its grandest</p>
+    </div>
+  </div>
+
+  <div class="day-grid">
+    <div class="day-card">
+      <div class="day-num">01<sub>Day</sub></div>
+      <div class="day-content">
+        <div class="day-city">Beijing</div>
+        <div class="day-title">Arrival, Tiananmen Square & the Hutongs</div>
+        <p class="day-text">Land at Beijing Capital Airport and check in near the Dongcheng district — ideally a courtyard hotel inside a hutong alley. In the afternoon, walk the length of Tiananmen Square and stay for the flag-lowering ceremony at sunset, a deeply ceremonial ritual timed exactly to dusk. Afterwards, duck into the hutong maze around Nanluoguxiang: browse indie shops, drink craft beer at a hole-in-the-wall bar, and eat street skewers. If you have energy, catch a traditional Chinese opera performance at the nearby Liyuan Theatre — it begins at 19:30.</p>
+        <div class="day-highlights">
+          <span class="tag sight">Tiananmen Square</span>
+          <span class="tag sight">Flag-lowering ceremony at dusk</span>
+          <span class="tag sight">Nanluoguxiang hutong alley</span>
+          <span class="tag sight">Liyuan Theatre — Beijing opera</span>
+          <span class="tag food">Hutong street skewers (chuanr)</span>
+          <span class="tag tip">Flag ceremony time changes daily with sunset — check online</span>
+          <span class="tag tip">Stay within 2km of the Drum Tower for easy access</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="day-card">
+      <div class="day-num">02<sub>Day</sub></div>
+      <div class="day-content">
+        <div class="day-city">Beijing</div>
+        <div class="day-title">Forbidden City, Jingshan Hill & Temple of Heaven</div>
+        <p class="day-text">Queue at the Forbidden City when gates open at 8:30am — book tickets online 3–5 days ahead or they sell out. Spend three to four hours inside the 180-acre complex, ending at the Imperial Garden. Exit north through the back gate and immediately climb Jingshan Hill for the finest aerial view of the palace's golden rooftops — it's only 15 minutes up. Descend for lunch in the hutongs nearby, then taxi south to the Temple of Heaven where locals practise tai chi, ballroom dancing, and Beijing opera in the sweeping surrounding park. End the day with Peking duck at Da Dong or Quanjude. After dinner, stroll the lit-up Qianmen pedestrian street.</p>
+        <div class="day-highlights">
+          <span class="tag sight">Forbidden City (9,999 rooms)</span>
+          <span class="tag sight">Jingshan Hill — rooftop panorama</span>
+          <span class="tag sight">Temple of Heaven</span>
+          <span class="tag sight">Qianmen pedestrian street at night</span>
+          <span class="tag food">Peking duck — Da Dong or Quanjude</span>
+          <span class="tag food">Jianbing crêpe for breakfast (¥10)</span>
+          <span class="tag tip">Pre-book Forbidden City tickets — they sell out 3+ days ahead</span>
+          <span class="tag tip">The Imperial Garden at the north end is often overlooked — don't miss it</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="day-card">
+      <div class="day-num">03<sub>Day</sub></div>
+      <div class="day-content">
+        <div class="day-city">Beijing → Xi'an</div>
+        <div class="day-title">Summer Palace, Great Wall & high-speed south</div>
+        <p class="day-text">Start early at the Summer Palace — the vast imperial garden built around Kunming Lake is extraordinary in morning light, particularly the Long Corridor with its 14,000 painted scenes. Leave by 9am to beat crowds. Then take a bus or taxi to Mutianyu (1.5 hrs) — the least crowded restored Great Wall section, flanked by dense forest and equipped with a cable car up and a toboggan slide down. Aim for the wall by 11am. Return to Beijing by early afternoon, grab a bowl of zhajiangmian in Sanlitun or Gulou, then catch a G-train to Xi'an (4.5 hrs, arriving evening). Check in near the Bell Tower.</p>
+        <div class="day-highlights">
+          <span class="tag sight">Summer Palace & Kunming Lake</span>
+          <span class="tag sight">Long Corridor (14,000 painted panels)</span>
+          <span class="tag sight">Mutianyu Great Wall</span>
+          <span class="tag sight">Wall toboggan slide (¥55)</span>
+          <span class="tag food">Zhajiangmian lunch before departure</span>
+          <span class="tag tip">Summer Palace: arrive before 8am for empty paths</span>
+          <span class="tag tip">Mutianyu: sections 14–23 are least crowded and most dramatic</span>
+          <span class="tag tip">G-trains Beijing West → Xi'an North: book 2 weeks ahead</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── XI'AN ── -->
+  <div class="city-header">
+    <div class="city-header-num">II</div>
+    <div class="city-header-info">
+      <h3>Xi'an 西安</h3>
+      <p>Days 4 – 5 &nbsp;·&nbsp; The ancient Silk Road capital</p>
+    </div>
+  </div>
+
+  <div class="day-grid">
+    <div class="day-card">
+      <div class="day-num">04<sub>Day</sub></div>
+      <div class="day-content">
+        <div class="day-city">Xi'an</div>
+        <div class="day-title">Terracotta Army, Huaqing Hot Springs & Muslim Quarter</div>
+        <p class="day-text">Take the metro or tourist bus (40 mins) to the Terracotta Army early — Pit 1's scale hits hardest when it isn't packed with tour groups. All three pits hold over 8,000 unique figures; none of the faces are repeated. On the way back, stop at Huaqing Hot Springs — the Tang-dynasty imperial retreat where Emperor Xuanzong met Yang Guifei, China's most celebrated romance. Return to Xi'an by mid-afternoon. Spend the rest of the day inside the Muslim Quarter: wander the Great Mosque (one of China's oldest, built in 742 AD), browse Beiyuanmen street for stalls selling every Hui snack imaginable, and graze dinner over roujiamo, paomo soup, and lamb skewers. End with pomegranate juice — Xi'an's famous street drink.</p>
+        <div class="day-highlights">
+          <span class="tag sight">Terracotta Army — all 3 pits</span>
+          <span class="tag sight">Huaqing Hot Springs palace</span>
+          <span class="tag sight">Great Mosque of Xi'an (742 AD)</span>
+          <span class="tag sight">Beiyuanmen food street</span>
+          <span class="tag food">Roujiamo — slow-braised pork flatbread</span>
+          <span class="tag food">Yangrou paomo — lamb broth with torn bread</span>
+          <span class="tag food">Pomegranate juice (fresh-pressed stalls)</span>
+          <span class="tag tip">Book Terracotta Army audio guide — worth every yuan</span>
+          <span class="tag tip">Arrive at 8am: half the crowds, same warriors</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="day-card">
+      <div class="day-num">05<sub>Day</sub></div>
+      <div class="day-content">
+        <div class="day-city">Xi'an → Zhangjiajie</div>
+        <div class="day-title">City Walls, Bell Tower, Little Goose Pagoda & fly south</div>
+        <p class="day-text">Rent a bicycle (¥45/hr) at the South Gate and cycle the full 14km circuit of Xi'an's Ming-dynasty city walls at dawn — the stone battlements glow amber in early light and the city below is still quiet. Finish by 8:30am, return the bike, and walk five minutes to the Bell Tower for morning bells (rung at 9am and 11am). Head west to the Little Goose Pagoda, a delicate 45-metre 8th-century Buddhist tower set in a tranquil park — the museum inside is surprisingly rich. Grab a bowl of biangbiang noodles nearby before checking out. Fly to Zhangjiajie (1.5 hrs), arriving early evening. The landscape change from the yellow plains to steep forested gorges is visible even from the plane window.</p>
+        <div class="day-highlights">
+          <span class="tag sight">Xi'an City Walls by bicycle</span>
+          <span class="tag sight">Bell Tower (morning bells at 9am)</span>
+          <span class="tag sight">Little Goose Pagoda & museum</span>
+          <span class="tag sight">Shaanxi History Museum (free, book ahead)</span>
+          <span class="tag food">Biangbiang noodles — wide hand-pulled belts</span>
+          <span class="tag food">Persimmon cake at the south gate market</span>
+          <span class="tag tip">City wall bike circuit: 2 hrs, best before 8am</span>
+          <span class="tag tip">Shaanxi History Museum requires advance reservation — free entry</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ZHANGJIAJIE ── -->
+  <div class="city-header">
+    <div class="city-header-num">III</div>
+    <div class="city-header-info">
+      <h3>Zhangjiajie 张家界</h3>
+      <p>Days 6 – 7 &nbsp;·&nbsp; The floating mountains of Avatar</p>
+    </div>
+  </div>
+
+  <div class="day-grid">
+    <div class="day-card">
+      <div class="day-num">06<sub>Day</sub></div>
+      <div class="day-content">
+        <div class="day-city">Zhangjiajie</div>
+        <div class="day-title">Tianmen Mountain, Glass Walkway & Avenue of Stars</div>
+        <p class="day-text">Take the Tianmen Mountain cable car — the world's longest passenger ropeway at 7.5km — rising through cloud layers and past cliff faces to the summit plateau. Walk the west clifftop glass-bottomed walkway (1,400m altitude, 1.6m wide — not for the faint of heart). Continue to Tianmen Cave, a natural arch 131m high with a staircase of 999 steps climbing through it. On the way back down, the 99-switchback road through the canyon is one of China's most dramatic drives. In the evening, walk the lit Zhangjiajie City pedestrian Avenue of Stars — lined with national park-themed street art and lively food stalls.</p>
+        <div class="day-highlights">
+          <span class="tag sight">Tianmen Mountain cable car (7.5km)</span>
+          <span class="tag sight">West clifftop glass walkway</span>
+          <span class="tag sight">Tianmen Cave — 999-step staircase</span>
+          <span class="tag sight">99-switchback mountain road</span>
+          <span class="tag sight">Avenue of Stars evening stroll</span>
+          <span class="tag food">Tujia smoked pork with mountain peppers</span>
+          <span class="tag tip">Start at 8am — cable car queues double by 10am</span>
+          <span class="tag tip">Bring a light jacket — summit is 5°C cooler than the city</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="day-card">
+      <div class="day-num">07<sub>Day</sub></div>
+      <div class="day-content">
+        <div class="day-city">Zhangjiajie → Chongqing</div>
+        <div class="day-title">Avatar Pillars, Bailong Elevator, Baofeng Lake & Golden Whip Stream</div>
+        <p class="day-text">Enter Zhangjiajie National Forest Park at 7:30am on the 2-day pass. Ride the Bailong Elevator (the world's tallest outdoor lift at 326m, built into the cliff face) to the Yuanjiajie plateau — this is where the "Avatar Hallelujah Mountain" photo was taken, and the pillar formations stretch as far as you can see. Hike the Yuanjiajie Loop (2km, easy), then take the monorail across to the Tianzi Mountain area for wider views and fewer people. Descend in the afternoon and follow the Golden Whip Stream trail (5.7km, flat) — a riverside walk between the base of the pillars where macaque monkeys occasionally appear trailside. End at Baofeng Lake for a final boat ride through the gorge at dusk. Catch an evening flight or early-morning train to Chongqing.</p>
+        <div class="day-highlights">
+          <span class="tag sight">Bailong Elevator (326m cliff lift)</span>
+          <span class="tag sight">Yuanjiajie — Avatar Hallelujah Mountain</span>
+          <span class="tag sight">Tianzi Mountain viewpoints</span>
+          <span class="tag sight">Golden Whip Stream trail (5.7km)</span>
+          <span class="tag sight">Baofeng Lake gorge boat ride</span>
+          <span class="tag tip">2-day park pass (¥248) covers all areas including elevator</span>
+          <span class="tag tip">Yuanjiajie is most dramatic in early morning mist</span>
+          <span class="tag tip">Golden Whip Stream: easy flat walk, allow 2 hours</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CHONGQING ── -->
+  <div class="city-header">
+    <div class="city-header-num">IV</div>
+    <div class="city-header-info">
+      <h3>Chongqing 重庆</h3>
+      <p>Days 8 – 9 &nbsp;·&nbsp; The mountain city of fire and fog</p>
+    </div>
+  </div>
+
+  <div class="day-grid">
+    <div class="day-card">
+      <div class="day-num">08<sub>Day</sub></div>
+      <div class="day-content">
+        <div class="day-city">Chongqing</div>
+        <div class="day-title">Ciqikou, Hongya Cave, Jiefangbei & the Yangtze at Night</div>
+        <p class="day-text">Chongqing is unlike any other Chinese city — built vertically up forested ridges where two great rivers meet, with subway trains that emerge from cliff tunnels mid-station and skyscrapers stacked on hillsides. Start the morning in Ciqikou, a 1,700-year-old stone-paved river town with tea houses, craft stalls, and incredible street food. Walk east along the Jialing riverbank to Hongya Cave — an 11-storey stilted building cantilevered over the river gorge, packed with restaurants and bars. In the afternoon, explore the surreal Jiefangbei CBD, then take a 1-hour Yangtze River night cruise for the most dramatic skyline view in China. End the day at a proper Chongqing hotpot restaurant — order the split pot if you need mercy from the mala broth.</p>
+        <div class="day-highlights">
+          <span class="tag sight">Ciqikou ancient river town</span>
+          <span class="tag sight">Hongya Cave stilted riverside complex</span>
+          <span class="tag sight">Jiefangbei CBD & Liberation Monument</span>
+          <span class="tag sight">Yangtze River night cruise</span>
+          <span class="tag sight">Eling Park — hilltop panorama of both rivers</span>
+          <span class="tag food">Chongqing hotpot (split pot recommended)</span>
+          <span class="tag food">Ciqikou pork rice — the town's famous dish</span>
+          <span class="tag food">Xiaomian noodles for breakfast (¥10)</span>
+          <span class="tag tip">Chongqing in summer is notoriously humid — visit in spring or autumn</span>
+          <span class="tag tip">Hongya Cave is best seen from the river at night</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="day-card">
+      <div class="day-num">09<sub>Day</sub></div>
+      <div class="day-content">
+        <div class="day-city">Chongqing → Guilin</div>
+        <div class="day-title">Dazu Rock Carvings, Shibati Stairs & south to Guilin</div>
+        <p class="day-text">Leave early for the UNESCO-listed Dazu Rock Carvings (2 hrs from Chongqing by hired car or tour) — over 50,000 cliff-carved Buddhist and Confucian figures dating from the Tang and Song dynasties, the finest religious rock art in China. The Beishan and Baoding Hill sites are the most impressive; allow 2.5 hours. Return to Chongqing and, before heading to the airport, climb the 18 Terraces (Shibati) — a dramatic stepped urban canyon of old staircase streets connecting the upper city to the river, recently restored and now lined with galleries and boutiques. This is old Chongqing at its most photogenic. Fly or take the high-speed train to Guilin (arriving evening), where the silhouettes of karst peaks against the lit sky announce you've entered a different world entirely.</p>
+        <div class="day-highlights">
+          <span class="tag sight">Dazu Rock Carvings (UNESCO) — Baoding Hill</span>
+          <span class="tag sight">Dazu Rock Carvings — Beishan Hill</span>
+          <span class="tag sight">Shibati — 18 Terraces staircase district</span>
+          <span class="tag sight">Liziba monorail station (train through building)</span>
+          <span class="tag food">Chuan Chuan skewers near Shibati</span>
+          <span class="tag tip">Dazu: hire a driver rather than joining a tour — more flexible timing</span>
+          <span class="tag tip">Liziba station: Line 2 train passes directly through a residential tower — surreal to witness</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── GUILIN ── -->
+  <div class="city-header">
+    <div class="city-header-num">V</div>
+    <div class="city-header-info">
+      <h3>Guilin & Yangshuo 桂林 阳朔</h3>
+      <p>Days 10 – 11 &nbsp;·&nbsp; The Li River & karst countryside</p>
+    </div>
+  </div>
+
+  <div class="day-grid">
+    <div class="day-card">
+      <div class="day-num">10<sub>Day</sub></div>
+      <div class="day-content">
+        <div class="day-city">Guilin</div>
+        <div class="day-title">Longji Rice Terraces, Elephant Trunk Hill & Night Lakes Cruise</div>
+        <p class="day-text">Leave Guilin by 7am for the Longji Terraced Fields (2.5 hrs north) — Dragon's Backbone rice terraces carved into the mountainside by the Zhuang and Yao minorities over 600 years. Reach the No. 1 viewpoint before 9am for mist-wrapped morning light. Descend through Ping'an village and browse the minority craft stalls. Back in Guilin by early afternoon, visit Elephant Trunk Hill — the city's emblem, a natural limestone arch that looks exactly like a drinking elephant. Walk the riverside park around it and explore the small cave beneath. Then head to Seven Star Park, Guilin's largest, where karst peaks rise directly from its lawns and caves run beneath them. Evening: the Two Rivers and Four Lakes illuminated boat tour circuits Guilin's central canal system past pagodas and lit bridges — genuinely one of the most beautiful night tours in China.</p>
+        <div class="day-highlights">
+          <span class="tag sight">Longji Rice Terraces — No. 1 viewpoint</span>
+          <span class="tag sight">Ping'an minority village</span>
+          <span class="tag sight">Elephant Trunk Hill & cave</span>
+          <span class="tag sight">Seven Star Park & caves</span>
+          <span class="tag sight">Two Rivers Four Lakes night boat tour</span>
+          <span class="tag food">Guilin rice noodles for breakfast (¥8)</span>
+          <span class="tag food">Stuffed Li River snails at a night stall</span>
+          <span class="tag tip">Best terraces: Oct–Nov (golden harvest) or June (vivid green)</span>
+          <span class="tag tip">Book the night boat tour at your hotel — fills up fast</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="day-card">
+      <div class="day-num">11<sub>Day</sub></div>
+      <div class="day-content">
+        <div class="day-city">Guilin → Yangshuo → Shanghai</div>
+        <div class="day-title">Li River cruise, Moon Hill, Yulong River & fly to Shanghai</div>
+        <p class="day-text">The Li River cruise from Guilin to Yangshuo (4 hrs) passes the exact scenery printed on China's 20-yuan note — a procession of reflected karst peaks, bamboo groves, and fishing boats at the bends. Take a shared bamboo raft rather than the tourist boat for a quieter, lower perspective. Arrive in Yangshuo and rent an e-bike or bicycle: ride the Yulong River greenway south (10km, flat) past stone bridges and water buffalo to the ancient Fuli village. Return for lunch and a plate of beer fish. In the afternoon, hike to Moon Hill — a 20-minute scramble up to a limestone arch with a 360° karst panorama. Head back to Guilin for an evening flight or train to Shanghai, arriving late. Tomorrow the city will be a complete shock to the system.</p>
+        <div class="day-highlights">
+          <span class="tag sight">Li River cruise — 20-yuan note scenery</span>
+          <span class="tag sight">Yulong River greenway cycling (10km)</span>
+          <span class="tag sight">Fuli ancient village</span>
+          <span class="tag sight">Moon Hill limestone arch hike</span>
+          <span class="tag sight">West Street — Yangshuo's lively night market</span>
+          <span class="tag food">Beer fish — Yangshuo's signature dish</span>
+          <span class="tag food">Yangshuo farmhouse lunch along the Yulong</span>
+          <span class="tag tip">Bamboo raft: ¥200–300, 4 hrs — far more atmospheric than tourist boat</span>
+          <span class="tag tip">Moon Hill: go late afternoon for golden light through the arch</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SHANGHAI ── -->
+  <div class="city-header">
+    <div class="city-header-num">VI</div>
+    <div class="city-header-info">
+      <h3>Shanghai 上海</h3>
+      <p>Days 12 – 14 &nbsp;·&nbsp; The city that lives in the future</p>
+    </div>
+  </div>
+
+  <div class="day-grid">
+    <div class="day-card">
+      <div class="day-num">12<sub>Day</sub></div>
+      <div class="day-content">
+        <div class="day-city">Shanghai</div>
+        <div class="day-title">The Bund, French Concession, Tianzifang & Xintiandi</div>
+        <p class="day-text">Walk the Bund at 6:30am before tour groups arrive — the kilometre-long promenade of neoclassical European bank buildings facing Pudong's sci-fi skyline across the Huangpu is Shanghai at its most cinematic. Cross to Pudong on the tourist ferry for the opposite angle. Back in Puxi, walk south through the French Concession: tree-lined Wukang Road is the most photogenic street in Shanghai, lined with art deco villas, independent cafes, and boutiques. Browse the labyrinthine Tianzifang arts and craft lanes, then walk north to Xintiandi — a beautifully restored shikumen longtang neighbourhood turned upmarket dining district. Lunch of xiaolongbao at Jia Jia Tang Bao or the original Din Tai Fung. End the day watching Pudong light up from a rooftop bar on the Bund.</p>
+        <div class="day-highlights">
+          <span class="tag sight">The Bund at sunrise</span>
+          <span class="tag sight">Bund tourist ferry to Pudong</span>
+          <span class="tag sight">Wukang Road — art deco villas</span>
+          <span class="tag sight">Tianzifang arts lanes</span>
+          <span class="tag sight">Xintiandi shikumen district</span>
+          <span class="tag sight">Rooftop bar on the Bund at dusk</span>
+          <span class="tag food">Xiaolongbao — Jia Jia Tang Bao (queue outside)</span>
+          <span class="tag food">Shengjianbao pan-fried buns from a street cart</span>
+          <span class="tag tip">Wukang Road: best photographed at golden hour</span>
+          <span class="tag tip">Jia Jia Tang Bao: cash only, arrive before 11am to avoid a long queue</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="day-card">
+      <div class="day-num">13<sub>Day</sub></div>
+      <div class="day-content">
+        <div class="day-city">Shanghai</div>
+        <div class="day-title">Yu Garden, Old Town, Shanghai Tower & Pudong skyline</div>
+        <p class="day-text">Spend the morning in the Yu Garden complex — the classical Ming-dynasty garden of rockeries, pavilions, and koi ponds is surrounded by a bazaar of tea houses, silk shops, and snack stalls. Don't miss the Huxinting Tea House, the most famous in Shanghai, sitting on a zigzag bridge over the central pond. Explore the nearby City God Temple and the old town alleyways (Laocheng district) — this is the quietest remnant of pre-colonial Shanghai. After lunch, cross to Pudong: the Shanghai Tower observation deck at 546m (highest in China, ¥220) delivers a vertiginous, strangely humbling view. Walk to the neighbouring SWFC Sky Walk for a second angle. In the evening, walk the Lujiazui waterfront and take in the light show that begins at 20:00.</p>
+        <div class="day-highlights">
+          <span class="tag sight">Yu Garden — Ming-dynasty classical garden</span>
+          <span class="tag sight">Huxinting Tea House on the zigzag bridge</span>
+          <span class="tag sight">City God Temple & Laocheng old town</span>
+          <span class="tag sight">Shanghai Tower observation deck (546m)</span>
+          <span class="tag sight">SWFC Sky Walk (bottle-opener building)</span>
+          <span class="tag sight">Lujiazui waterfront light show (20:00)</span>
+          <span class="tag food">Crab soup dumplings at the Yu Garden bazaar</span>
+          <span class="tag food">Hairy crab (Oct–Nov season only)</span>
+          <span class="tag tip">Shanghai Tower: book tickets online to skip the queue</span>
+          <span class="tag tip">Yu Garden: arrive before 9am — it becomes extremely crowded by midday</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="day-card">
+      <div class="day-num">14<sub>Day</sub></div>
+      <div class="day-content">
+        <div class="day-city">Shanghai</div>
+        <div class="day-title">West Bund, M50 Art District, Jing'an Temple & departure</div>
+        <p class="day-text">The West Bund waterfront district is Shanghai at its most forward-looking — the Long Museum, Tank Shanghai, and Yuz Museum sit in former industrial buildings along the river, housing world-class contemporary art collections. Walk north along the riverfront to the M50 Creative Park in Suzhou Creek — a network of former textile factories converted into artist studios and galleries, many of them free to enter and browse. By midday, visit Jing'an Temple: a Buddhist temple of extraordinary gold and lacquer grandeur, improbably surrounded by luxury skyscrapers in central Shanghai, functioning as an active place of worship even today. Grab a final meal in Jing'an's side streets before catching the Maglev (430 km/h, ¥50, 8 minutes) from Pudong Airport — the fastest way to leave a city on earth.</p>
+        <div class="day-highlights">
+          <span class="tag sight">West Bund arts waterfront</span>
+          <span class="tag sight">Long Museum & Tank Shanghai</span>
+          <span class="tag sight">M50 Creative Park — free artist studios</span>
+          <span class="tag sight">Jing'an Temple — gold Buddhist temple</span>
+          <span class="tag sight">Maglev train to airport (430 km/h)</span>
+          <span class="tag food">Brunch in Jing'an — Shanghai's best café neighbourhood</span>
+          <span class="tag food">Red-braised pork for a final lunch</span>
+          <span class="tag tip">Allow 3.5 hrs minimum to reach Pudong Airport</span>
+          <span class="tag tip">M50: most studios open 10am–6pm, free entry — hidden gem</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOD ══ -->
+<section id="food">
+  <div class="ghost-num">四</div>
+  <div class="section-label">Culinary Guide</div>
+  <h2>What to eat, <em>city by city</em></h2>
+  <p>Chinese cuisine is six cuisines arguing with each other. This itinerary covers four distinct culinary regions — each one a revelation. Never order from the tourist menu if you can gesture at what the table next to you is eating.</p>
+
+  <div class="ornament">✦ ✦ ✦</div>
+
+  <div class="food-grid">
+    <div class="food-card">
+      <div class="food-city">Beijing</div>
+      <div class="food-name">Peking Duck 北京烤鸭</div>
+      <p class="food-desc">Lacquered, slow-roasted whole duck sliced tableside and wrapped in thin pancakes with plum sauce. Da Dong and Quanjude are the historic institutions.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-city">Beijing</div>
+      <div class="food-name">Zhajiangmian</div>
+      <p class="food-desc">Thick wheat noodles topped with fermented soybean paste and shredded vegetables. A humble, intensely satisfying bowl found in any Beijing hutong.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-city">Xi'an</div>
+      <div class="food-name">Roujiamo 肉夹馍</div>
+      <p class="food-desc">Slow-braised spiced pork stuffed into a flatbread — legitimately the world's oldest sandwich. The Hui version uses mutton and cumin.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-city">Xi'an</div>
+      <div class="food-name">Biangbiang Noodles</div>
+      <p class="food-desc">Hand-pulled belts of wheat noodle, wide as a hand and slapped flat on the board. Topped with chilli oil, garlic, and vinegar. Written with the most complex Chinese character in existence.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-city">Chongqing</div>
+      <div class="food-name">Chongqing Hotpot 火锅</div>
+      <p class="food-desc">A roiling vat of mala (numbing-spicy) broth. Order the split pot if you need mercy. Tripe, lotus root, and fatty beef are essential. Drink cold Tsingtao between bites.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-city">Chongqing</div>
+      <div class="food-name">Xiaomian 小面</div>
+      <p class="food-desc">Chongqing's breakfast noodle — thin wheat noodles in a punishingly flavourful spicy broth, topped with peanuts, scallions, and chilli oil. ¥10 from any street stall.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-city">Guilin</div>
+      <div class="food-name">Guilin Rice Noodles 桂林米粉</div>
+      <p class="food-desc">Thin rice vermicelli in a slow-simmered pork and herb broth, topped with marinated meats and crispy fried peanuts. Eaten at breakfast by every local, every morning.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-city">Yangshuo</div>
+      <div class="food-name">Beer Fish 啤酒鱼</div>
+      <p class="food-desc">Freshwater fish from the Li River, braised in local Liquan beer with peppers, tomatoes, and spring onions. Every restaurant on West Street claims to have the original recipe.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-city">Shanghai</div>
+      <div class="food-name">Xiaolongbao 小笼包</div>
+      <p class="food-desc">Shanghai's transcendent soup dumpling — thin pork skin encasing a molten pork and ginger broth. Place in a soup spoon, bite a corner, sip the soup, then eat whole. Never rush this.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-city">Shanghai</div>
+      <div class="food-name">Shengjianbao 生煎包</div>
+      <p class="food-desc">Pan-fried cousin of the XLB — doughy, crispy-bottomed, generously filled. Found on street corners throughout the city for ¥8–12. Best with a cup of hot soy milk.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-city">Shanghai</div>
+      <div class="food-name">Hairy Crab 大闸蟹</div>
+      <p class="food-desc">In season (October–November): steamed hairy crab from Yangcheng Lake, served with black vinegar and ginger. A seasonal obsession that brings the city to its knees each autumn.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-city">Everywhere</div>
+      <div class="food-name">Street Breakfast 早餐</div>
+      <p class="food-desc">Every Chinese city has its own breakfast culture. Jianbing (savoury crêpes) in Beijing, warm soy milk and you tiao everywhere, egg-and-chive boxes in Xi'an. Never skip it.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-city">Beijing</div>
+      <div class="food-name">Jianbing 煎饼</div>
+      <p class="food-desc">Beijing's iconic breakfast crêpe — thin mung bean batter spread on a griddle, cracked with a fresh egg, smeared with fermented bean paste and chilli, wrapped around a crunchy wonton wafer. Eaten standing up. ¥8–12.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-city">Xi'an</div>
+      <div class="food-name">Yangrou Paomo 羊肉泡馍</div>
+      <p class="food-desc">A Hui Muslim classic: thick flatbread torn by hand into tiny pieces, then slow-simmered in rich mutton broth. The tearing is part of the ritual — the smaller the pieces, the better the bowl.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-city">Chongqing</div>
+      <div class="food-name">Chuan Chuan 串串香</div>
+      <p class="food-desc">Skewered meats and vegetables self-cooked in a communal mala broth — like hotpot on a stick. Order by the basket, count your sticks at the end. Popular late-night street snack.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-city">Zhangjiajie</div>
+      <div class="food-name">Tujia Smoked Pork 土家腊肉</div>
+      <p class="food-desc">Tujia minority smoked pork, cured over wood-fire for months and stir-fried with wild mountain peppers and garlic shoots. A deeply savoury, smoky dish unique to western Hunan.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-city">Shanghai</div>
+      <div class="food-name">Red-Braised Pork 红烧肉</div>
+      <p class="food-desc">Shanghai's soul dish — pork belly slow-braised in soy sauce, Shaoxing wine, and rock sugar until lacquered and trembling. Every local grandmother has a version. None of them share the recipe.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-city">Beijing</div>
+      <div class="food-name">Douzhi 豆汁</div>
+      <p class="food-desc">Beijing's most divisive drink — a fermented mung bean liquid with a pungent, sour tang. Old-timers swear by it; most visitors recoil. Try it once at a hutong tea house. Respect is earned either way.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-city">Xi'an</div>
+      <div class="food-name">Persimmon Cake 柿子饼</div>
+      <p class="food-desc">Flat, chewy pastries made from Shaanxi persimmon pulp, filled with red bean or walnut and fried until golden. Sold by street vendors near the Bell Tower. Sticky, sweet, and impossible to eat neatly.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-city">Guilin</div>
+      <div class="food-name">Stuffed Li River Snails 螺蛳</div>
+      <p class="food-desc">Tiny river snails stuffed with pork, black bean, and chilli, then stewed in a clay pot. A late-night street snack eaten with toothpicks at plastic tables under fluorescent lights. Deeply local.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ TRANSPORT ══ -->
+<section id="transport">
+  <div class="ghost-num">五</div>
+  <div class="section-label">Getting Around</div>
+  <h2>China's <em>transport network</em></h2>
+  <p>China has the world's largest high-speed rail network — over 40,000km of track. For journeys under four hours, trains beat flights on overall journey time and experience. Book through Trip.com or the 12306 app (use a VPN to access the English version).</p>
+
+  <div class="transport-grid">
+    <div class="transport-card">
+      <span class="transport-icon">🚄</span>
+      <div class="transport-type">High-Speed Rail</div>
+      <div class="transport-name">G & D Trains</div>
+      <p class="transport-desc">Bullet trains run at 300–350 km/h. Perfectly punctual. The Beijing–Xi'an route (4.5 hrs) and Shanghai–Guilin route are stunning. Book 2 weeks ahead for popular routes.</p>
+    </div>
+    <div class="transport-card">
+      <span class="transport-icon">✈️</span>
+      <div class="transport-type">Domestic Flights</div>
+      <div class="transport-name">Budget Airlines</div>
+      <p class="transport-desc">Zhangjiajie–Chongqing and Guilin–Shanghai are best done by air. China Eastern, Air China, and Hainan Airlines are the main carriers. Trip.com aggregates all.</p>
+    </div>
+    <div class="transport-card">
+      <span class="transport-icon">🚇</span>
+      <div class="transport-type">City Metro</div>
+      <div class="transport-name">Subway Systems</div>
+      <p class="transport-desc">Beijing, Shanghai, and Chongqing have world-class metro systems. Use Alipay or WeChat Pay to tap in. A single trip rarely exceeds ¥8 (~€1).</p>
+    </div>
+    <div class="transport-card">
+      <span class="transport-icon">🛺</span>
+      <div class="transport-type">City Taxis</div>
+      <div class="transport-name">DiDi App</div>
+      <p class="transport-desc">DiDi is China's Uber — essential for anywhere the metro doesn't reach. Use DiDi Express. Have your hotel write your destination in Chinese characters for the driver.</p>
+    </div>
+    <div class="transport-card">
+      <span class="transport-icon">🚌</span>
+      <div class="transport-type">Long-Distance</div>
+      <div class="transport-name">Tourist Shuttles</div>
+      <p class="transport-desc">For Zhangjiajie park access and Li River cruises, book through your hotel or local agencies. Avoid private touts at train stations.</p>
+    </div>
+    <div class="transport-card">
+      <span class="transport-icon">🛳️</span>
+      <div class="transport-type">River Boat</div>
+      <div class="transport-name">Li River Cruise</div>
+      <p class="transport-desc">The official tourist boats are fine but expensive. A shared bamboo raft is cheaper and more atmospheric. Book through your Guilin hotel the night before.</p>
+    </div>
+    <div class="transport-card">
+      <span class="transport-icon">🚡</span>
+      <div class="transport-type">Cable Cars</div>
+      <div class="transport-name">Mountain Ropeways</div>
+      <p class="transport-desc">Tianmen Mountain's 7.5km ropeway is the world's longest passenger cable car. The Zhangjiajie Bailong Elevator (outdoor, 326m) is also unique. Both require separate tickets.</p>
+    </div>
+    <div class="transport-card">
+      <span class="transport-icon">🚆</span>
+      <div class="transport-type">Overnight Train</div>
+      <div class="transport-name">Sleeper Services</div>
+      <p class="transport-desc">China's overnight sleeper trains are surprisingly comfortable and excellent value. A soft-sleeper berth on the Chongqing–Guilin route saves a hotel night and arrives at dawn.</p>
+    </div>
+    <div class="transport-card">
+      <span class="transport-icon">🛵</span>
+      <div class="transport-type">Bike & Scooter</div>
+      <div class="transport-name">Shared Cycling</div>
+      <p class="transport-desc">Meituan and Hello Bike are everywhere in Beijing, Shanghai, and Guilin. Scan with Alipay and pay per minute. Yangshuo's countryside is best explored by rented bicycle or e-scooter.</p>
+    </div>
+    <div class="transport-card">
+      <span class="transport-icon">🚐</span>
+      <div class="transport-type">Airport Links</div>
+      <div class="transport-name">Express Trains</div>
+      <p class="transport-desc">Shanghai's Maglev (430 km/h, ¥50) and Beijing's Airport Express are both fast and stress-free. In Xi'an, bus line 43 connects the airport to the Bell Tower in under an hour for ¥20.</p>
+    </div>
+    <div class="transport-card">
+      <span class="transport-icon">🗺️</span>
+      <div class="transport-type">Navigation</div>
+      <div class="transport-name">Maps & Booking</div>
+      <p class="transport-desc">Baidu Maps works without a VPN and handles transit directions well. For train tickets, the Trip.com app (English) is the easiest option for foreigners — no need for the notoriously fiddly 12306 app.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ BUDGET ══ -->
+<section id="budget">
+  <div class="ghost-num">六</div>
+  <div class="section-label">Budget Breakdown</div>
+  <h2>What does <em>two weeks</em> cost?</h2>
+  <p>China is remarkably affordable for a destination of its scale and quality. The biggest variable is accommodation — budget options are excellent (China's hostel scene is world-class) but mid-range hotels deliver exceptional value. Meals from street stalls and local restaurants cost a fraction of what you'd expect.</p>
+
+  <div class="budget-grid">
+    <div class="budget-tier">
+      <div class="tier-name">Budget</div>
+      <div class="tier-price">€50–70<span>/day</span></div>
+      <p>Hostel dorms, street food and local noodle shops, shared transport, no optional tours. Entirely feasible and often more authentic.</p>
+    </div>
+    <div class="budget-tier featured">
+      <div class="tier-name">Mid-Range (recommended)</div>
+      <div class="tier-price">€100–140<span>/day</span></div>
+      <p>3-star or boutique hotels, mix of local restaurants and one good meal per city, occasional DiDi taxis, key entrance fees covered.</p>
+    </div>
+    <div class="budget-tier">
+      <div class="tier-name">Comfortable</div>
+      <div class="tier-price">€185–260<span>/day</span></div>
+      <p>5-star properties, private guides in Beijing and Xi'an, business-class train seats, all entrance fees and river cruises included.</p>
+    </div>
+  </div>
+
+  <h3>Where your mid-range budget goes</h3>
+
+  <div class="budget-bars" id="budget-bars">
+    <div class="bar-row">
+      <div class="bar-label">Accommodation</div>
+      <div class="bar-track"><div class="bar-fill" data-pct="38"></div></div>
+      <div class="bar-pct">38%</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">Transport</div>
+      <div class="bar-track"><div class="bar-fill jade" data-pct="28"></div></div>
+      <div class="bar-pct">28%</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">Food</div>
+      <div class="bar-track"><div class="bar-fill gold" data-pct="20"></div></div>
+      <div class="bar-pct">20%</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">Entrance Fees</div>
+      <div class="bar-track"><div class="bar-fill" data-pct="9"></div></div>
+      <div class="bar-pct">9%</div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">Misc / Buffer</div>
+      <div class="bar-track"><div class="bar-fill jade" data-pct="5"></div></div>
+      <div class="bar-pct">5%</div>
+    </div>
+  </div>
+
+  <div class="practical-grid" style="margin-top:2.5rem;">
+    <div class="practical-card">
+      <h4>Typical daily spends</h4>
+      <ul>
+        <li>Street breakfast: ¥8–15</li>
+        <li>Local lunch: ¥25–45</li>
+        <li>Dinner at restaurant: ¥60–120</li>
+        <li>Metro per trip: ¥4–8</li>
+        <li>DiDi ride: ¥15–35</li>
+        <li>Local beer: ¥10–15</li>
+        <li>Bottled water: ¥2–4</li>
+      </ul>
+    </div>
+    <div class="practical-card">
+      <h4>Major entrance fees</h4>
+      <ul>
+        <li>Forbidden City: ¥60</li>
+        <li>Terracotta Army: ¥120</li>
+        <li>Great Wall (Mutianyu): ¥65</li>
+        <li>Zhangjiajie NP (2 day): ¥248</li>
+        <li>Tianmen Mountain: ¥258</li>
+        <li>Yu Garden: ¥40</li>
+        <li>Li River cruise (bamboo): ¥200–300</li>
+      </ul>
+    </div>
+    <div class="practical-card">
+      <h4>Money tips</h4>
+      <ul>
+        <li>Set up Alipay before you go — it's everywhere</li>
+        <li>Carry small amounts of cash for markets</li>
+        <li>ICBC & Bank of China ATMs accept foreign cards</li>
+        <li>WeChat Pay works too but requires bank link</li>
+        <li>Tip: almost never expected</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SEASONS ══ -->
+<section id="seasons">
+  <div class="ghost-num">七</div>
+  <div class="section-label">When to Go</div>
+  <h2>Seasons across <em>a continent</em></h2>
+  <p>China's vast geography means seasons behave differently in each city on this itinerary. As a general rule: spring (April–May) and autumn (September–October) are the consensus sweet spot — comfortable temperatures, manageable crowds.</p>
+
+  <div class="season-grid">
+    <div class="season-card">
+      <div class="season-name">Spring</div>
+      <div class="season-months">March — May</div>
+      <div class="season-rating">
+        <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+      </div>
+      <p class="season-desc">Mild, clear, and green. Cherry blossom in Beijing (late March). Rice terraces lush and vivid. Crowds manageable before Golden Week. Ideal for this itinerary.</p>
+    </div>
+    <div class="season-card">
+      <div class="season-name">Summer</div>
+      <div class="season-months">June — August</div>
+      <div class="season-rating">
+        <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star dim">★</span><span class="star dim">★</span>
+      </div>
+      <p class="season-desc">Hot and humid across the south. Zhangjiajie clouds add drama. Beijing hot but bearable. Shanghai is a furnace. July–August is peak domestic travel — book weeks ahead.</p>
+    </div>
+    <div class="season-card">
+      <div class="season-name">Autumn</div>
+      <div class="season-months">Sept — November</div>
+      <div class="season-rating">
+        <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+      </div>
+      <p class="season-desc">The finest season. Golden rice terraces at Longji. Hairy crab in Shanghai. Crisp air in Beijing and Xi'an. Colours in the karst landscape are extraordinary in October.</p>
+    </div>
+    <div class="season-card">
+      <div class="season-name">Winter</div>
+      <div class="season-months">Dec — February</div>
+      <div class="season-rating">
+        <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star dim">★</span><span class="star dim">★</span>
+      </div>
+      <p class="season-desc">Beijing and Xi'an are cold to bitter. The south (Guilin, Shanghai) stays mild. Crowds at their minimum. The Forbidden City in snow is an extraordinary sight, if you time it right.</p>
+    </div>
+  </div>
+
+  <div class="pull-quote" style="margin-top:2rem;">
+    <p>Avoid: Chinese National Holiday Golden Week (Oct 1–7) and Spring Festival / Chinese New Year (late Jan to mid-Feb). Train tickets sell out weeks in advance and major sights hit capacity limits.</p>
+  </div>
+</section>
+
+<!-- ══ PRACTICAL ══ -->
+<section id="practical">
+  <div class="ghost-num">八</div>
+  <div class="section-label">Practical Essentials</div>
+  <h2>Before you go — <em>the real list</em></h2>
+  <p>China has a few unique logistical considerations that reward preparation. Sort these before you fly and the trip runs on rails (literally).</p>
+
+  <div class="practical-grid">
+    <div class="practical-card">
+      <h4>Visa</h4>
+      <ul>
+        <li>Most nationalities need a tourist visa (L visa)</li>
+        <li>Apply 2–4 weeks ahead at a Chinese embassy</li>
+        <li>144-hour visa-free transit available in many cities for some nationalities — check eligibility</li>
+        <li>Passport valid 6+ months beyond travel dates</li>
+      </ul>
+    </div>
+    <div class="practical-card">
+      <h4>VPN & Internet</h4>
+      <ul>
+        <li>Google, WhatsApp, Instagram, and most Western apps are blocked</li>
+        <li>Download and test a VPN before you land (ExpressVPN, Astrill, or NordVPN work reliably)</li>
+        <li>Use WeChat for messaging locally</li>
+        <li>Baidu Maps works without VPN for navigation</li>
+      </ul>
+    </div>
+    <div class="practical-card">
+      <h4>Payments</h4>
+      <ul>
+        <li>Set up Alipay (International version now supports foreign cards)</li>
+        <li>Carry ¥500–1,000 in cash as backup</li>
+        <li>ICBC and Bank of China ATMs are safest for foreign cards</li>
+        <li>Most big hotels accept Visa/Mastercard</li>
+      </ul>
+    </div>
+    <div class="practical-card">
+      <h4>SIM Card</h4>
+      <ul>
+        <li>Buy a Chinese SIM on arrival (airport counters) — China Mobile, China Unicom, or China Telecom</li>
+        <li>Alternatively: get a Hong Kong SIM before arrival for broader app access</li>
+        <li>Register your passport at the carrier shop</li>
+      </ul>
+    </div>
+    <div class="practical-card">
+      <h4>Health & Safety</h4>
+      <ul>
+        <li>Tap water is not safe to drink — bottled water everywhere</li>
+        <li>Air quality: bring an N95 mask, especially Beijing</li>
+        <li>Travel insurance with medical cover is essential</li>
+        <li>No specific vaccines required; hepatitis A/B recommended</li>
+      </ul>
+    </div>
+    <div class="practical-card">
+      <h4>Key Apps</h4>
+      <ul>
+        <li>DiDi — taxis and ride-hailing</li>
+        <li>Trip.com — trains, flights, hotels</li>
+        <li>WeChat — messaging, some payments</li>
+        <li>Alipay — payments and QR codes everywhere</li>
+        <li>Baidu Translate — offline Chinese translation</li>
+      </ul>
+    </div>
+    <div class="practical-card">
+      <h4>Etiquette</h4>
+      <ul>
+        <li>Push and queue culture — relax your European reflexes</li>
+        <li>Loud conversation is normal in restaurants</li>
+        <li>Use both hands when exchanging business cards</li>
+        <li>Avoid discussing Taiwan, Tibet, or politics</li>
+        <li>Photography: always ask before photographing individuals</li>
+      </ul>
+    </div>
+    <div class="practical-card">
+      <h4>Useful Phrases</h4>
+      <ul>
+        <li>Nǐ hǎo (你好) — Hello</li>
+        <li>Xièxiè (谢谢) — Thank you</li>
+        <li>Duōshǎo qián? (多少钱?) — How much?</li>
+        <li>Wǒ bù chī ròu (我不吃肉) — I don't eat meat</li>
+        <li>Wǒ yào zhège (我要这个) — I want this one</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-title">China — A Two-Week Journey</div>
+  <p>Beijing · Xi'an · Zhangjiajie · Chongqing · Guilin · Shanghai</p>
+  <div style="margin-top:1rem; opacity:.5;">✦</div>
+</footer>
+
+<script>
+// ── PROGRESS BAR ──
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = (scrollTop / docHeight) * 100;
+  document.getElementById('progress').style.width = progress + '%';
+});
+
+// ── NAV ACTIVE STATE ──
+const sections = document.querySelectorAll('section[id], div.hero');
+const navLinks = document.querySelectorAll('nav a');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const id = e.target.id;
+      const link = document.querySelector(`nav a[href="#${id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { threshold: 0.3 });
+sections.forEach(s => observer.observe(s));
+
+// ── SCROLL REVEAL ──
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.day-card, .food-card').forEach(el => revealObserver.observe(el));
+
+// ── ANIMATED BUDGET BARS ──
+const barsObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      document.querySelectorAll('.bar-fill').forEach(bar => {
+        const pct = bar.dataset.pct;
+        setTimeout(() => { bar.style.width = pct + '%'; }, 200);
+      });
+      barsObserver.disconnect();
+    }
+  });
+}, { threshold: 0.3 });
+const barsSection = document.getElementById('budget-bars');
+if (barsSection) barsObserver.observe(barsSection);
+
+// ── LEAFLET MAP ──
+window.addEventListener('load', () => {
+  const map = L.map('route-map', {
+    center: [31.5, 108],
+    zoom: 5,
+    zoomControl: true,
+    attributionControl: false
+  });
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    opacity: 0.7
+  }).addTo(map);
+
+  const cities = [
+    { name: 'Beijing', zh: '北京', coords: [39.9042, 116.4074], days: 'Days 1–3', desc: 'Forbidden City · Great Wall · Temple of Heaven' },
+    { name: "Xi'an", zh: '西安', coords: [34.3416, 108.9398], days: 'Days 4–5', desc: 'Terracotta Army · City Walls · Muslim Quarter' },
+    { name: 'Zhangjiajie', zh: '张家界', coords: [29.1166, 110.4792], days: 'Days 6–7', desc: 'Avatar Pillars · Tianmen Mountain · Bailong Elevator' },
+    { name: 'Chongqing', zh: '重庆', coords: [29.5630, 106.5516], days: 'Days 8–9', desc: 'Hotpot · Yangtze Cruise · Dazu Rock Carvings' },
+    { name: 'Guilin / Yangshuo', zh: '桂林 阳朔', coords: [25.2738, 110.2905], days: 'Days 10–11', desc: 'Li River · Longji Terraces · Karst Peaks' },
+    { name: 'Shanghai', zh: '上海', coords: [31.2304, 121.4737], days: 'Days 12–14', desc: 'The Bund · French Concession · Yu Garden' }
+  ];
+
+  const routeCoords = cities.map(c => c.coords);
+
+  // Draw animated dashed route line
+  const routeLine = L.polyline(routeCoords, {
+    color: '#b5312a',
+    weight: 2.5,
+    opacity: 0.6,
+    dashArray: '8, 8',
+    lineJoin: 'round'
+  }).addTo(map);
+
+  // Custom marker SVG
+  const makeIcon = (num, color) => L.divIcon({
+    html: `<div style="
+      width:32px; height:32px;
+      background:${color};
+      border:2px solid #fff;
+      border-radius:50% 50% 50% 0;
+      transform:rotate(-45deg);
+      box-shadow:0 2px 6px rgba(0,0,0,.25);
+      display:flex; align-items:center; justify-content:center;
+    ">
+      <span style="
+        transform:rotate(45deg);
+        color:#fff;
+        font-size:11px;
+        font-weight:700;
+        font-family:serif;
+      ">${num}</span>
+    </div>`,
+    className: '',
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -34]
+  });
+
+  const colors = ['#b5312a','#c9973a','#3a7a5e','#b5312a','#c9973a','#3a7a5e'];
+
+  cities.forEach((city, i) => {
+    const marker = L.marker(city.coords, { icon: makeIcon(i + 1, colors[i]) }).addTo(map);
+    marker.bindPopup(`
+      <div style="font-family:'Georgia',serif; padding:4px 2px; min-width:160px;">
+        <div style="font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:#b5312a; margin-bottom:3px; font-family:sans-serif;">${city.days}</div>
+        <strong style="font-size:15px; color:#1a1410;">${city.name}</strong>
+        <span style="font-size:12px; color:#9c8c7e; margin-left:6px;">${city.zh}</span>
+        <div style="font-size:12px; color:#6b5c4e; margin-top:5px; line-height:1.5;">${city.desc}</div>
+      </div>
+    `, { maxWidth: 220 });
+  });
+
+  // Fit map to route with some padding
+  map.fitBounds(routeLine.getBounds(), { padding: [40, 40] });
+});
+</script>
+</body>
+</html>
