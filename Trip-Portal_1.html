@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Travel Guides — Version C</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Shippori+Mincho:wght@400;600;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:        #0d0b08;
+    --ink-soft:   #1c1713;
+    --paper:      #f8f6f2;
+    --paper-warm: #f0ece4;
+    --gold:       #b8820a;
+    --gold-lt:    #d4a030;
+    --muted:      #7a7068;
+    --light-muted:#aaa098;
+    --cream:      #f8f6f2;
+  }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #b8820a, #d4a030, #b8820a);
+    z-index: 2000;
+  }
+
+  body {
+    background: #f8f6f2;
+    color: #0d0b08;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* ── GRAIN OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.03;
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  /* ── HEADER ── */
+  header {
+    padding: 3rem 5vw 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    position: relative;
+    z-index: 10;
+    border-bottom: 1px solid rgba(0,0,0,0.12);
+  }
+
+  .logo-eyebrow {
+    font-size: 0.62rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .logo-eyebrow::before {
+    content: '';
+    display: block;
+    width: 28px;
+    height: 1px;
+    background: var(--gold);
+  }
+  .logo-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+
+  .header-count {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-weight: 900;
+    color: rgba(0,0,0,0.07);
+    line-height: 1;
+  }
+  .header-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 0.2rem;
+  }
+
+  /* ── HERO SECTION ── */
+  .hero {
+    padding: 5rem 5vw 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg-text {
+    position: absolute;
+    bottom: -1rem;
+    right: 3vw;
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(8rem, 20vw, 20rem);
+    font-weight: 900;
+    font-style: italic;
+    color: rgba(0,0,0,0.06);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+    letter-spacing: -0.05em;
+  }
+
+  .hero-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .hero-label::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 1px;
+    background: rgba(0,0,0,0.2);
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 7vw, 6rem);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    max-width: 720px;
+    margin-bottom: 2rem;
+    color: #0d0b08;
+  }
+  .hero-title em {
+    font-style: italic;
+    color: #b8820a;
+  }
+
+  .hero-sub {
+    max-width: 480px;
+    font-size: 1rem;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0,0,0,0.1) 20%, rgba(0,0,0,0.1) 80%, transparent);
+    margin: 0 5vw;
+  }
+
+  /* ── GRID SECTION ── */
+  .collection-section {
+    padding: 5rem 5vw 8rem;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 3rem;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .section-sort {
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(0,0,0,0.2);
+  }
+
+  /* ── TRIP CARDS GRID ── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 1px;
+  }
+
+  /* ── TRIP CARD ── */
+  .trip-card {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    aspect-ratio: 3/4;
+    background: #111;
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .trip-card:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+  }
+
+  /* Photo */
+  .card-photo {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                filter 0.8s ease;
+    filter: grayscale(0%) brightness(0.92);
+    transform: scale(1.04);
+  }
+
+  .trip-card:hover .card-photo {
+    transform: scale(1.1);
+    filter: grayscale(0%) brightness(1);
+  }
+
+  /* Gradient overlay */
+  .card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(5,4,3,0.88) 0%,
+      rgba(5,4,3,0.45) 35%,
+      rgba(5,4,3,0.1) 60%,
+      rgba(5,4,3,0.0) 100%
+    );
+    transition: background 0.5s ease;
+  }
+  .trip-card:hover .card-overlay {
+    background: linear-gradient(
+      to top,
+      rgba(5,4,3,0.92) 0%,
+      rgba(5,4,3,0.5) 35%,
+      rgba(5,4,3,0.15) 60%,
+      rgba(5,4,3,0.0) 100%
+    );
+  }
+
+  /* Color accent (top-left corner) */
+  .card-accent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .trip-card:hover .card-accent {
+    opacity: 1;
+  }
+
+  /* Card number */
+  .card-num {
+    position: absolute;
+    top: 1.4rem;
+    right: 1.6rem;
+    font-family: 'Playfair Display', serif;
+    font-size: 4rem;
+    font-weight: 900;
+    color: rgba(255,255,255,0.07);
+    line-height: 1;
+    z-index: 2;
+    transition: color 0.4s ease;
+    user-select: none;
+  }
+  .trip-card:hover .card-num {
+    color: rgba(255,255,255,0.12);
+  }
+
+  /* Top badge */
+  .card-badge {
+    position: absolute;
+    top: 1.4rem;
+    left: 1.6rem;
+    z-index: 3;
+    font-size: 0.6rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    padding: 0.28rem 0.7rem;
+    border: 1px solid;
+    opacity: 0.85;
+    transition: opacity 0.3s;
+  }
+  .trip-card:hover .card-badge {
+    opacity: 1;
+  }
+
+  /* Card body */
+  .card-body {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 2rem 1.8rem;
+    z-index: 3;
+    transform: translateY(0);
+    transition: transform 0.4s ease;
+  }
+
+  .card-region {
+    font-size: 0.62rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .card-region::before {
+    content: '';
+    display: block;
+    width: 20px;
+    height: 1px;
+    background: currentColor;
+  }
+
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.9rem;
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+    color: #fff;
+  }
+  .card-title em {
+    font-style: italic;
+    display: block;
+  }
+
+  .card-duration {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.82rem;
+    font-style: italic;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 1.2rem;
+  }
+
+  /* Meta row */
+  .card-meta {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    margin-bottom: 1.4rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .meta-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+  }
+  .meta-key {
+    font-size: 0.58rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .meta-sep {
+    width: 1px;
+    height: 28px;
+    background: rgba(255,255,255,0.1);
+  }
+
+  /* CTA */
+  .card-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    transition: color 0.3s, gap 0.3s;
+  }
+  .trip-card:hover .card-cta {
+    color: rgba(255,255,255,0.85);
+    gap: 1rem;
+  }
+  .card-cta .arrow {
+    width: 28px;
+    height: 1px;
+    background: currentColor;
+    position: relative;
+    transition: width 0.3s;
+  }
+  .card-cta .arrow::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+    width: 5px;
+    height: 5px;
+    border-right: 1px solid currentColor;
+    border-top: 1px solid currentColor;
+  }
+  .trip-card:hover .card-cta .arrow {
+    width: 38px;
+  }
+
+  /* Tags strip */
+  .card-tags {
+    position: absolute;
+    top: 0;
+    left: 4px;
+    right: 0;
+    padding: 1.2rem 1.6rem;
+    display: flex;
+    gap: 0.5rem;
+    z-index: 4;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity 0.4s ease 0.1s, transform 0.4s ease 0.1s;
+  }
+  .trip-card:hover .card-tags {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .tag-chip {
+    font-size: 0.58rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.6rem;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(8px);
+    color: rgba(255,255,255,0.6);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid rgba(0,0,0,0.12);
+    padding: 2.5rem 5vw;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+  }
+  .footer-note {
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: rgba(0,0,0,0.3);
+    max-width: 380px;
+    line-height: 1.7;
+  }
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.9rem;
+    font-style: italic;
+    color: rgba(0,0,0,0.2);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-label  { animation: fadeUp 0.6s ease both; animation-delay: 0.1s; }
+  .hero-title  { animation: fadeUp 0.7s ease both; animation-delay: 0.2s; }
+  .hero-sub    { animation: fadeUp 0.7s ease both; animation-delay: 0.35s; }
+  .cards-grid  { animation: fadeUp 0.8s ease both; animation-delay: 0.5s; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    header { padding: 2rem 5vw 1.5rem; }
+    .hero { padding: 3.5rem 5vw 3rem; }
+    .collection-section { padding: 3rem 5vw 5rem; }
+    .cards-grid { grid-template-columns: 1fr; gap: 1px; }
+    .trip-card { aspect-ratio: 4/3; }
+    .card-title { font-size: 1.6rem; }
+    footer { flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-eyebrow">Personal Collection</div>
+    <div class="logo-title">Travel Guides</div>
+  </div>
+  <div class="header-meta">
+    <div class="header-count">04</div>
+    <div class="header-label">Itineraries</div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-text">Asia</div>
+  <div class="hero-label">Curated Itineraries</div>
+  <h1 class="hero-title">Select your <em>next</em><br>destination</h1>
+  <p class="hero-sub">Hand-crafted travel guides with day-by-day itineraries, budgets, transport tips, and local recommendations.</p>
+</section>
+
+<div class="divider"></div>
+
+<!-- COLLECTION GRID -->
+<section class="collection-section">
+  <div class="section-header">
+    <div class="section-title">All Guides</div>
+    <div class="section-sort">Asia Collection</div>
+  </div>
+
+  <div class="cards-grid">
+
+    <!-- JAPAN CARD -->
+    <a class="trip-card" href="japan-2week-travel-guide-17.html" target="_blank" tabindex="0">
+      <div class="card-accent" style="background: linear-gradient(to bottom, #c0392b, #8b1a13);"></div>
+      <div class="card-photo" style="background-image: url('https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1200&q=85');"></div>
+      <div class="card-overlay"></div>
+
+      <div class="card-num">01</div>
+
+      <div class="card-tags">
+        <span class="tag-chip">Culture</span>
+        <span class="tag-chip">Food</span>
+        <span class="tag-chip">Temples</span>
+        <span class="tag-chip">Nature</span>
+      </div>
+
+      <div class="card-body">
+        <div class="card-region">Japan</div>
+        <h2 class="card-title">Japan<em>Trip</em></h2>
+        <div class="card-duration">14 Days Itinerary</div>
+
+        <div class="card-meta">
+          <div class="meta-item">
+            <span class="meta-val">14</span>
+            <span class="meta-key">Days</span>
+          </div>
+          <div class="meta-sep"></div>
+          <div class="meta-item">
+            <span class="meta-val">6</span>
+            <span class="meta-key">Cities</span>
+          </div>
+          <div class="meta-sep"></div>
+          <div class="meta-item">
+            <span class="meta-val">~€3,100</span>
+            <span class="meta-key">Est. Budget</span>
+          </div>
+        </div>
+
+        <div class="card-cta">
+          Open Guide <span class="arrow"></span>
+        </div>
+      </div>
+    </a>
+
+    <!-- THAILAND CARD -->
+    <a class="trip-card" href="thailand-guide-euros.html" target="_blank" tabindex="0">
+      <div class="card-accent" style="background: linear-gradient(to bottom, #A51931, #2D2A4A);"></div>
+      <div class="card-photo" style="background-image: url('https://images.unsplash.com/photo-1552465011-b4e21bf6e79a?w=1200&q=85');"></div>
+      <div class="card-overlay"></div>
+
+      <div class="card-num">02</div>
+
+      <div class="card-tags">
+        <span class="tag-chip">Temples</span>
+        <span class="tag-chip">Beaches</span>
+        <span class="tag-chip">Street Food</span>
+        <span class="tag-chip">Islands</span>
+      </div>
+
+      <div class="card-body">
+        <div class="card-region">Thailand</div>
+        <h2 class="card-title">Thailand<em>Trip</em></h2>
+        <div class="card-duration">10 Nights Itinerary</div>
+
+        <div class="card-meta">
+          <div class="meta-item">
+            <span class="meta-val">10</span>
+            <span class="meta-key">Nights</span>
+          </div>
+          <div class="meta-sep"></div>
+          <div class="meta-item">
+            <span class="meta-val">4</span>
+            <span class="meta-key">Regions</span>
+          </div>
+          <div class="meta-sep"></div>
+          <div class="meta-item">
+            <span class="meta-val">~€1,020</span>
+            <span class="meta-key">Est. Budget</span>
+          </div>
+        </div>
+
+        <div class="card-cta">
+          Open Guide <span class="arrow"></span>
+        </div>
+      </div>
+    </a>
+
+    <!-- PHILIPPINES CARD -->
+    <a class="trip-card" href="philippines-guide.html" target="_blank" tabindex="0">
+      <div class="card-accent" style="background: linear-gradient(to bottom, #0038A8, #CE1126);"></div>
+      <div class="card-photo" style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&q=85');"></div>
+      <div class="card-overlay"></div>
+
+      <div class="card-num">03</div>
+
+      <div class="card-tags">
+        <span class="tag-chip">El Nido</span>
+        <span class="tag-chip">Cebu</span>
+        <span class="tag-chip">Bohol</span>
+        <span class="tag-chip">Palawan</span>
+      </div>
+
+      <div class="card-body">
+        <div class="card-region">Philippines</div>
+        <h2 class="card-title">Philippines<em>Trip</em></h2>
+        <div class="card-duration">10 Nights Itinerary</div>
+
+        <div class="card-meta">
+          <div class="meta-item">
+            <span class="meta-val">10</span>
+            <span class="meta-key">Nights</span>
+          </div>
+          <div class="meta-sep"></div>
+          <div class="meta-item">
+            <span class="meta-val">4</span>
+            <span class="meta-key">Destinations</span>
+          </div>
+          <div class="meta-sep"></div>
+          <div class="meta-item">
+            <span class="meta-val">~€880</span>
+            <span class="meta-key">Est. Budget</span>
+          </div>
+        </div>
+
+        <div class="card-cta">
+          Open Guide <span class="arrow"></span>
+        </div>
+      </div>
+    </a>
+
+    <!-- CHINA CARD -->
+    <a class="trip-card" href="china-travel-guide.html" target="_blank" tabindex="0">
+      <div class="card-accent" style="background: linear-gradient(to bottom, #b5312a, #c9973a);"></div>
+      <div class="card-photo" style="background-image: url('https://images.unsplash.com/photo-1508804185872-d7badad00f7d?w=1200&q=85');"></div>
+      <div class="card-overlay"></div>
+
+      <div class="card-num">04</div>
+
+      <div class="card-tags">
+        <span class="tag-chip">Great Wall</span>
+        <span class="tag-chip">Karst</span>
+        <span class="tag-chip">Hotpot</span>
+        <span class="tag-chip">History</span>
+      </div>
+
+      <div class="card-body">
+        <div class="card-region">China</div>
+        <h2 class="card-title">China<em>Trip</em></h2>
+        <div class="card-duration">14 Days Itinerary</div>
+
+        <div class="card-meta">
+          <div class="meta-item">
+            <span class="meta-val">14</span>
+            <span class="meta-key">Days</span>
+          </div>
+          <div class="meta-sep"></div>
+          <div class="meta-item">
+            <span class="meta-val">6</span>
+            <span class="meta-key">Cities</span>
+          </div>
+          <div class="meta-sep"></div>
+          <div class="meta-item">
+            <span class="meta-val">~€1,500</span>
+            <span class="meta-key">Est. Budget</span>
+          </div>
+        </div>
+
+        <div class="card-cta">
+          Open Guide <span class="arrow"></span>
+        </div>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-note">© 2025 Gabriel — All rights reserved. Content, itineraries, and guides may not be reproduced or redistributed without permission.</div>
+  <div class="footer-logo">Travel Guides</div>
+  <div class="footer-note">Asia Series Vol. I</div>
+</footer>
+
+</body>
+</html>
